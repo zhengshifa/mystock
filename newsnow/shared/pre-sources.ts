@@ -413,6 +413,33 @@ export const originSources = {
       },
     },
   },
+  "bloomberg": {
+    name: "彭博社",
+    column: "world",
+    color: "blue",
+    type: "realtime",
+    interval: Time.Common,
+    home: "https://www.bloomberg.com",
+    desc: "全球财经新闻领导者",
+  },
+  "reuters": {
+    name: "路透社",
+    column: "world",
+    color: "orange",
+    type: "realtime",
+    interval: Time.Common,
+    home: "https://www.reuters.com",
+    desc: "国际权威新闻通讯社",
+  },
+  "yahoo-finance": {
+    name: "Yahoo Finance",
+    column: "finance",
+    color: "purple",
+    type: "realtime",
+    interval: Time.Common,
+    home: "https://finance.yahoo.com",
+    desc: "雅虎财经新闻",
+  },
 } as const satisfies Record<string, OriginSource>
 
 export function genSources() {

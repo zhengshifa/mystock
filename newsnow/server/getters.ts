@@ -40,6 +40,9 @@ import weibo from "./sources/weibo"
 import xueqiu from "./sources/xueqiu"
 import zaobao from "./sources/zaobao"
 import zhihu from "./sources/zhihu"
+import bloomberg from "./sources/bloomberg"
+import reuters from "./sources/reuters"
+import yahooFinance from "./sources/yahoo-finance"
 
 // 新闻源映射
 const sourceModules = {
@@ -80,7 +83,10 @@ const sourceModules = {
   weibo,
   xueqiu,
   zaobao,
-  zhihu
+  zhihu,
+  bloomberg,
+  reuters,
+  "yahoo-finance": yahooFinance
 }
 
 // 创建getters对象

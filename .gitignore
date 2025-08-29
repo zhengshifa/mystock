@@ -1,0 +1,15 @@
+# 编译产物
+newsnow/dist/
+newsnow/build/
+newsnow/node_modules/
+
+# python
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+
+.venv/
+*/.venv/
+*/*/.venv/
+*/*/*/.venv/
