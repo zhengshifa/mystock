@@ -1,0 +1,1982 @@
+# GM API接口覆盖情况分析报告
+
+## 总体情况
+- 总API接口数: 205
+- 已覆盖接口数: 29
+- 未覆盖接口数: 176
+- 覆盖率: 14.1%
+
+## 未覆盖的API接口（按功能分类）
+
+### 历史数据 (5个)
+- `get_history_l2bars`
+- `get_history_symbol`
+- `get_history_ticks_l2`
+- `get_history_transaction_l2`
+- `stk_get_index_history_constituents`
+
+### 基础信息 (6个)
+- `get_trading_dates_by_year`
+- `get_trading_times`
+- `ipo_get_instruments`
+- `option_get_symbols_by_exchange`
+- `option_get_symbols_by_in_at_out`
+- `universe_get_symbols`
+
+### 财务数据 (11个)
+- `stk_get_finance_audit`
+- `stk_get_finance_deriv_pt`
+- `stk_get_finance_forecast`
+- `stk_get_finance_prime`
+- `stk_get_finance_prime_pt`
+- `stk_get_fundamentals_balance`
+- `stk_get_fundamentals_balance_pt`
+- `stk_get_fundamentals_cashflow`
+- `stk_get_fundamentals_cashflow_pt`
+- `stk_get_fundamentals_income`
+- `stk_get_fundamentals_income_pt`
+
+### 期权数据 (24个)
+- `option_calculate_delta`
+- `option_calculate_gamma`
+- `option_calculate_greeks`
+- `option_calculate_hv`
+- `option_calculate_iv`
+- `option_calculate_ivsurface`
+- `option_calculate_price`
+- `option_calculate_rho`
+- `option_calculate_t`
+- `option_calculate_theta`
+- `option_calculate_vega`
+- `option_comb`
+- `option_comb_by_comb_info`
+- `option_covered_close`
+- `option_covered_open`
+- `option_exercise`
+- `option_get_comb_info`
+- `option_get_comb_pos`
+- `option_get_delisted_dates`
+- `option_get_exercise_prices`
+- `option_preorder_sell_margin`
+- `option_preorder_valid_volume`
+- `option_sep`
+- `option_sep_by_comb_pos`
+
+### 期货数据 (5个)
+- `fut_get_continuous_contracts`
+- `fut_get_contract_info`
+- `fut_get_transaction_ranking`
+- `fut_get_transaction_rankings`
+- `fut_get_warehouse_receipt`
+
+### 基金数据 (12个)
+- `fnd_get_adj_factor`
+- `fnd_get_dividend`
+- `fnd_get_etf_constituents`
+- `fnd_get_net_value`
+- `fnd_get_portfolio`
+- `fnd_get_share`
+- `fnd_get_split`
+- `fund_buy`
+- `fund_etf_buy`
+- `fund_etf_redemption`
+- `fund_redemption`
+- `fund_subscribing`
+
+### 债券数据 (10个)
+- `bnd_get_amount_change`
+- `bnd_get_analysis`
+- `bnd_get_call_info`
+- `bnd_get_conversion_price`
+- `bnd_get_put_info`
+- `bond_convertible_call`
+- `bond_convertible_get_call_info`
+- `bond_convertible_put`
+- `bond_convertible_put_cancel`
+- `bond_reverse_repurchase_agreement`
+
+### 融资融券 (15个)
+- `credit_buying_on_collateral`
+- `credit_buying_on_margin`
+- `credit_collateral_in`
+- `credit_collateral_out`
+- `credit_get_borrowable_instruments`
+- `credit_get_borrowable_instruments_positions`
+- `credit_get_cash`
+- `credit_get_collateral_instruments`
+- `credit_get_contracts`
+- `credit_repay_cash_by_selling_share`
+- `credit_repay_cash_directly`
+- `credit_repay_share_by_buying_share`
+- `credit_repay_share_directly`
+- `credit_selling_on_collateral`
+- `credit_short_selling`
+
+### 交易委托 (19个)
+- `algo_order`
+- `algo_order_batch`
+- `algo_order_cancel`
+- `algo_order_pause`
+- `algo_smart_reorder`
+- `algo_smart_reorder_cancel`
+- `get_algo_child_orders`
+- `get_algo_orders`
+- `order_batch`
+- `order_cancel`
+- `order_cancel_all`
+- `order_close_all`
+- `order_percent`
+- `order_target_percent`
+- `order_target_value`
+- `order_target_volume`
+- `order_value`
+- `order_volume`
+- `place_order_mm`
+
+### 账户查询 (3个)
+- `get_cash`
+- `get_orders_mm`
+- `get_position`
+
+### 系统设置 (9个)
+- `py_gmi_set_version`
+- `schedule`
+- `set_account_id`
+- `set_mfp`
+- `set_option`
+- `set_parameter`
+- `set_serv_addr_v5`
+- `timer`
+- `timer_stop`
+
+### 其他 (57个)
+- `Context`
+- `GmError`
+- `add_parameter`
+- `exit_handler`
+- `get_concept`
+- `get_continuous_contracts`
+- `get_execution_reports`
+- `get_expire_rest_days`
+- `get_fundamentals`
+- `get_fundamentals_n`
+- `get_industry`
+- `get_instrumentinfos`
+- `get_next_trading_date`
+- `get_open_call_auction`
+- `get_previous_trading_date`
+- `get_sector`
+- `get_strerror`
+- `get_unfinished_orders`
+- `get_unfinished_orders_mm`
+- `get_varietyinfos`
+- `get_version`
+- `ipo_buy`
+- `ipo_get_lot_info`
+- `ipo_get_match_number`
+- `ipo_get_quota`
+- `log`
+- `raw_func`
+- `run`
+- `stk_abnor_change_detail`
+- `stk_abnor_change_stocks`
+- `stk_active_stock_top10_shszhk_info`
+- `stk_get_adj_factor`
+- `stk_get_daily_basic`
+- `stk_get_daily_basic_pt`
+- `stk_get_daily_mktvalue`
+- `stk_get_daily_mktvalue_pt`
+- `stk_get_daily_valuation`
+- `stk_get_daily_valuation_pt`
+- `stk_get_dividend`
+- `stk_get_industry_category`
+- `stk_get_industry_constituents`
+- `stk_get_money_flow`
+- `stk_get_ration`
+- `stk_get_sector_category`
+- `stk_get_sector_constituents`
+- `stk_get_share_change`
+- `stk_get_shareholder_num`
+- `stk_get_symbol_industry`
+- `stk_get_symbol_sector`
+- `stk_get_top_shareholder`
+- `stk_hk_inst_holding_detail_info`
+- `stk_hk_inst_holding_info`
+- `stk_quota_shszhk_infos`
+- `stop`
+- `universe_delete`
+- `universe_get_names`
+- `universe_set`
+
+## 已覆盖的API接口
+
+- `current`
+- `current_price`
+- `get_constituents`
+- `get_contract_expire_rest_days`
+- `get_dividend`
+- `get_history_bars_l2`
+- `get_history_constituents`
+- `get_history_instruments`
+- `get_history_l2orders`
+- `get_history_l2orders_queue`
+- `get_history_l2ticks`
+- `get_history_l2transactions`
+- `get_instruments`
+- `get_next_n_trading_dates`
+- `get_orders`
+- `get_previous_n_trading_dates`
+- `get_symbol_infos`
+- `get_symbols`
+- `get_trading_dates`
+- `get_trading_session`
+- `history`
+- `history_n`
+- `last_tick`
+- `set_serv_addr`
+- `set_token`
+- `stk_get_finance_deriv`
+- `stk_get_index_constituents`
+- `subscribe`
+- `unsubscribe`
+
+## Demo文件API使用情况
+
+### api_demos\01_historical_data\demo_get_history_bars_l2.py
+- `L2` (非GM API)
+- `abs` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_history_bars_l2` ✓
+- `head` (非GM API)
+- `history` ✓
+- `join` (非GM API)
+- `load` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `std` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_history_bars_l2_api` (非GM API)
+- `test_l2_data_analysis` (非GM API)
+- `test_l2_data_availability` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `to_string` (非GM API)
+- `values` (非GM API)
+
+### api_demos\01_historical_data\demo_get_history_l2orders.py
+- `agg` (非GM API)
+- `analyze_l2orders` (非GM API)
+- `api` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_history_l2orders` ✓
+- `getattr` (非GM API)
+- `groupby` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `join` (非GM API)
+- `l2order_to_dict` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `nunique` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_history_l2orders` (非GM API)
+- `to_csv` (非GM API)
+- `to_datetime` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\01_historical_data\demo_get_history_l2orders_queue.py
+- `agg` (非GM API)
+- `analyze_l2orders_queue` (非GM API)
+- `api` (非GM API)
+- `dump` (非GM API)
+- `extend` (非GM API)
+- `get` (非GM API)
+- `get_history_l2orders_queue` ✓
+- `getattr` (非GM API)
+- `groupby` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `iterrows` (非GM API)
+- `join` (非GM API)
+- `l2orders_queue_to_dict` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `nunique` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_history_l2orders_queue` (非GM API)
+- `to_csv` (非GM API)
+- `to_datetime` (非GM API)
+- `to_dict` (非GM API)
+
+### api_demos\01_historical_data\demo_get_history_l2ticks.py
+- `agg` (非GM API)
+- `analyze_l2ticks` (非GM API)
+- `api` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_history_l2ticks` ✓
+- `getattr` (非GM API)
+- `groupby` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `join` (非GM API)
+- `l2tick_to_dict` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `nunique` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_history_l2ticks` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\01_historical_data\demo_get_history_l2transactions.py
+- `agg` (非GM API)
+- `analyze_l2transactions` (非GM API)
+- `api` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_history_l2transactions` ✓
+- `getattr` (非GM API)
+- `groupby` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `join` (非GM API)
+- `l2transaction_to_dict` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `nunique` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_history_l2transactions` (非GM API)
+- `to_csv` (非GM API)
+- `to_datetime` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\01_historical_data\demo_history.py
+- `ADJUST_NONE` (非GM API)
+- `ADJUST_POST` (非GM API)
+- `ADJUST_PREV` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `head` (非GM API)
+- `history` ✓
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `test_history_api` (非GM API)
+- `test_history_with_different_params` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `to_string` (非GM API)
+
+### api_demos\01_historical_data\demo_history_n.py
+- `ADJUST_PREV` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `history_n` ✓
+- `join` (非GM API)
+- `load` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `tail` (非GM API)
+- `test_history_n_api` (非GM API)
+- `test_history_n_edge_cases` (非GM API)
+- `test_history_n_multiple_symbols` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `unique` (非GM API)
+
+### api_demos\02_realtime_data\demo_context_data.py
+- `analyze_context_data` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_data_to_dict` (非GM API)
+- `current` ✓
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `lower` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `on_bar` (非GM API)
+- `on_tick` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_handler` (非GM API)
+- `set_token` ✓
+- `startswith` (非GM API)
+- `strftime` (非GM API)
+- `subscribe` ✓
+- `sum` (非GM API)
+- `test_context_data` (非GM API)
+- `test_context_data_simple` (非GM API)
+- `to_csv` (非GM API)
+- `type` (非GM API)
+- `unsubscribe` ✓
+
+### api_demos\02_realtime_data\demo_current.py
+- `append` (非GM API)
+- `current` ✓
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `iterrows` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `test_current_api` (非GM API)
+- `test_current_different_fields` (非GM API)
+- `test_current_multiple_symbols` (非GM API)
+- `test_current_realtime_monitoring` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+
+### api_demos\02_realtime_data\demo_current_l2.py
+- `add` (非GM API)
+- `analyze_l2_data_structure` (非GM API)
+- `append` (非GM API)
+- `copy` (非GM API)
+- `current_l2` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `else` (非GM API)
+- `extend` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `l2_data_to_dict` (非GM API)
+- `load` (非GM API)
+- `ncurrent_l2` (非GM API)
+- `now` (非GM API)
+- `round` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_current_l2_different_markets` (非GM API)
+- `test_current_l2_monitoring` (非GM API)
+- `test_current_l2_multiple` (非GM API)
+- `test_current_l2_single` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\02_realtime_data\demo_current_price.py
+- `append` (非GM API)
+- `current_price` ✓
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `ncurrent_price` (非GM API)
+- `now` (非GM API)
+- `round` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_current_price_different_markets` (非GM API)
+- `test_current_price_monitoring` (非GM API)
+- `test_current_price_multiple` (非GM API)
+- `test_current_price_single` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\02_realtime_data\demo_get_subscribed_symbols.py
+- `ExcelWriter` (非GM API)
+- `add` (非GM API)
+- `analyze_subscribed_symbols_data` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `discard` (非GM API)
+- `dummy_callback` (非GM API)
+- `dump` (非GM API)
+- `extend` (非GM API)
+- `fromisoformat` (非GM API)
+- `get` (非GM API)
+- `get_mock_subscribed_symbols` (非GM API)
+- `get_subscribed_symbols` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `save_subscribed_symbols_results` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `split` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_subscribed_symbols` (非GM API)
+- `to_csv` (非GM API)
+- `to_excel` (非GM API)
+- `total_seconds` (非GM API)
+- `track_subscription` (非GM API)
+- `write` (非GM API)
+
+### api_demos\02_realtime_data\demo_get_unsubscribed_symbols.py
+- `add` (非GM API)
+- `analyze_unsubscribed_symbols_data` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `discard` (非GM API)
+- `dummy_callback` (非GM API)
+- `dump` (非GM API)
+- `extend` (非GM API)
+- `fromisoformat` (非GM API)
+- `get` (非GM API)
+- `get_mock_unsubscribed_symbols` (非GM API)
+- `get_unsubscribed_symbols` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `save_unsubscribed_symbols_results` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `split` (非GM API)
+- `strftime` (非GM API)
+- `test_get_unsubscribed_symbols` (非GM API)
+- `to_csv` (非GM API)
+- `total_seconds` (非GM API)
+- `track_subscription` (非GM API)
+- `write` (非GM API)
+
+### api_demos\02_realtime_data\demo_last_tick.py
+- `add` (非GM API)
+- `analyze_tick_data_structure` (非GM API)
+- `append` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `extend` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `last_tick` ✓
+- `load` (非GM API)
+- `nlast_tick` (非GM API)
+- `now` (非GM API)
+- `round` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_last_tick_different_markets` (非GM API)
+- `test_last_tick_monitoring` (非GM API)
+- `test_last_tick_multiple` (非GM API)
+- `test_last_tick_single` (非GM API)
+- `tick_to_dict` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\02_realtime_data\demo_subscribe.py
+- `analyze_subscription_data` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_data_to_dict` (非GM API)
+- `copy` (非GM API)
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `if` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `now` (非GM API)
+- `on_bar` (非GM API)
+- `on_l2order` (非GM API)
+- `on_l2tick` (非GM API)
+- `on_l2transaction` (非GM API)
+- `on_tick` (非GM API)
+- `print_subscription_status` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `save_subscription_results` (非GM API)
+- `set_token` ✓
+- `startswith` (非GM API)
+- `strftime` (非GM API)
+- `subscribe` ✓
+- `sum` (非GM API)
+- `test_subscribe` (非GM API)
+- `to_csv` (非GM API)
+- `total_seconds` (非GM API)
+- `unsubscribe` ✓
+- `values` (非GM API)
+
+### api_demos\02_realtime_data\demo_unsubscribe.py
+- `add_subscription` (非GM API)
+- `analyze_unsubscribe_data` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_data_to_dict` (非GM API)
+- `copy` (非GM API)
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `fromisoformat` (非GM API)
+- `get` (非GM API)
+- `get_subscription_status` (非GM API)
+- `getattr` (非GM API)
+- `if` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `on_bar` (非GM API)
+- `on_l2tick` (非GM API)
+- `on_tick` (非GM API)
+- `pop` (非GM API)
+- `print_subscription_status` (非GM API)
+- `remove_subscription` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `save_unsubscribe_results` (非GM API)
+- `set_token` ✓
+- `startswith` (非GM API)
+- `strftime` (非GM API)
+- `subscribe` ✓
+- `sum` (非GM API)
+- `test_unsubscribe` (非GM API)
+- `total_seconds` (非GM API)
+- `unsubscribe` ✓
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_constituents.py
+- `add` (非GM API)
+- `analyze_constituents_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `constituent_to_dict` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_constituents` ✓
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `nget_constituents` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_constituents_edge_cases` (非GM API)
+- `test_get_constituents_historical` (非GM API)
+- `test_get_constituents_major_indices` (非GM API)
+- `test_get_constituents_sector_indices` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_contract_expire_rest_days.py
+- `analyze_expire_data` (非GM API)
+- `append` (非GM API)
+- `collect_valid_data` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_contract_expire_rest_days` ✓
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `locals` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `nget_contract_expire_rest_days` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_contract_expire_rest_days_batch` (非GM API)
+- `test_get_contract_expire_rest_days_edge_cases` (非GM API)
+- `test_get_contract_expire_rest_days_futures` (非GM API)
+- `test_get_contract_expire_rest_days_options` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_dividend.py
+- `add` (非GM API)
+- `analyze_dividend_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dividend_to_dict` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_dividend` ✓
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_dividend` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `test_get_dividend_by_year` (非GM API)
+- `test_get_dividend_edge_cases` (非GM API)
+- `test_get_dividend_high_yield_stocks` (非GM API)
+- `test_get_dividend_major_stocks` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_history_constituents.py
+- `add` (非GM API)
+- `analyze_history_constituents_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `constituent_to_dict` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_history_constituents` ✓
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_history_constituents` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_history_constituents_date_ranges` (非GM API)
+- `test_get_history_constituents_edge_cases` (非GM API)
+- `test_get_history_constituents_major_indices` (非GM API)
+- `test_get_history_constituents_sector_indices` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_history_instruments.py
+- `add` (非GM API)
+- `analyze_history_instruments_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_history_instruments` ✓
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `instrument_to_dict` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_history_instruments` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `test_get_history_instruments_by_date_range` (非GM API)
+- `test_get_history_instruments_by_exchange` (非GM API)
+- `test_get_history_instruments_by_sec_type` (非GM API)
+- `test_get_history_instruments_edge_cases` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_history_symbol_infos.py
+- `add` (非GM API)
+- `analyze_history_symbol_infos_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_history_symbol_infos` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_history_symbol_infos` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `symbol_info_to_dict` (非GM API)
+- `test_get_history_symbol_infos_batch` (非GM API)
+- `test_get_history_symbol_infos_date_ranges` (非GM API)
+- `test_get_history_symbol_infos_edge_cases` (非GM API)
+- `test_get_history_symbol_infos_single` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_instruments.py
+- `add` (非GM API)
+- `analyze_instruments_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_instruments` ✓
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `instrument_to_dict` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_instruments` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `test_get_instruments_by_exchange` (非GM API)
+- `test_get_instruments_by_sec_type` (非GM API)
+- `test_get_instruments_combined_filters` (非GM API)
+- `test_get_instruments_specific_symbols` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_next_n_trading_dates.py
+- `analyze_trading_dates` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_next_n_trading_dates` ✓
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `strptime` (非GM API)
+- `sum` (非GM API)
+- `test_get_next_n_trading_dates` (非GM API)
+- `to_csv` (非GM API)
+- `weekday` (非GM API)
+- `write` (非GM API)
+
+### api_demos\03_basic_info\demo_get_previous_n_trading_dates.py
+- `analyze_trading_dates` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_previous_n_trading_dates` ✓
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `strptime` (非GM API)
+- `sum` (非GM API)
+- `test_get_previous_n_trading_dates` (非GM API)
+- `to_csv` (非GM API)
+- `weekday` (非GM API)
+- `write` (非GM API)
+
+### api_demos\03_basic_info\demo_get_shares.py
+- `add` (非GM API)
+- `analyze_shares_data` (非GM API)
+- `any` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_shares` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_shares` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `shares_to_dict` (非GM API)
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `test_get_shares_edge_cases` (非GM API)
+- `test_get_shares_historical` (非GM API)
+- `test_get_shares_major_stocks` (非GM API)
+- `test_get_shares_multiple_symbols` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_stk_bonus.py
+- `add` (非GM API)
+- `analyze_stk_bonus_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_stk_bonus` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `max` (非GM API)
+- `nget_stk_bonus` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `stk_bonus_to_dict` (非GM API)
+- `strftime` (非GM API)
+- `test_get_stk_bonus_different_periods` (非GM API)
+- `test_get_stk_bonus_edge_cases` (非GM API)
+- `test_get_stk_bonus_high_bonus_stocks` (非GM API)
+- `test_get_stk_bonus_major_stocks` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_stk_limit.py
+- `abs` (非GM API)
+- `add` (非GM API)
+- `all` (非GM API)
+- `analyze_stk_limit_data` (非GM API)
+- `any` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_stk_limit` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_stk_limit` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `stk_limit_to_dict` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_stk_limit_different_dates` (非GM API)
+- `test_get_stk_limit_different_markets` (非GM API)
+- `test_get_stk_limit_edge_cases` (非GM API)
+- `test_get_stk_limit_major_stocks` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_stk_shares_change.py
+- `add` (非GM API)
+- `analyze_stk_shares_change_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_stk_shares_change` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_stk_shares_change` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `stk_shares_change_to_dict` (非GM API)
+- `strftime` (非GM API)
+- `test_get_stk_shares_change_by_type` (非GM API)
+- `test_get_stk_shares_change_different_periods` (非GM API)
+- `test_get_stk_shares_change_edge_cases` (非GM API)
+- `test_get_stk_shares_change_major_stocks` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_stk_split.py
+- `add` (非GM API)
+- `analyze_stk_split_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_stk_split` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_stk_split` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `stk_split_to_dict` (非GM API)
+- `strftime` (非GM API)
+- `test_get_stk_split_different_periods` (非GM API)
+- `test_get_stk_split_edge_cases` (非GM API)
+- `test_get_stk_split_major_stocks` (非GM API)
+- `test_get_stk_split_single_date` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_symbols.py
+- `analyze_symbols` (非GM API)
+- `api` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_symbols` ✓
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `split` (非GM API)
+- `strftime` (非GM API)
+- `test_get_symbols` (非GM API)
+- `to_csv` (非GM API)
+- `write` (非GM API)
+
+### api_demos\03_basic_info\demo_get_symbol_infos.py
+- `add` (非GM API)
+- `analyze_symbol_infos_data` (非GM API)
+- `append` (非GM API)
+- `collect_fields_from_results` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `get` (非GM API)
+- `get_symbol_infos` ✓
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `nget_symbol_infos` (非GM API)
+- `now` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `symbol_info_to_dict` (非GM API)
+- `test_get_symbol_infos_edge_cases` (非GM API)
+- `test_get_symbol_infos_multiple` (非GM API)
+- `test_get_symbol_infos_single` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+
+### api_demos\03_basic_info\demo_get_trading_dates.py
+- `append` (非GM API)
+- `copy` (非GM API)
+- `count_recursive` (非GM API)
+- `count_success_and_data` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `flatten_results` (非GM API)
+- `format_trading_dates` (非GM API)
+- `get` (非GM API)
+- `get_trading_dates` ✓
+- `hasattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `nget_trading_dates` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_serv_addr` ✓
+- `set_token` ✓
+- `sorted` (非GM API)
+- `strftime` (非GM API)
+- `strptime` (非GM API)
+- `sum` (非GM API)
+- `test_get_trading_dates_analysis` (非GM API)
+- `test_get_trading_dates_basic` (非GM API)
+- `test_get_trading_dates_edge_cases` (非GM API)
+- `test_get_trading_dates_exchanges` (非GM API)
+- `to_csv` (非GM API)
+- `values` (非GM API)
+- `weekday` (非GM API)
+
+### api_demos\03_basic_info\demo_get_trading_session.py
+- `analyze_trading_session` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_trading_session_to_dict` (非GM API)
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `get_trading_session` ✓
+- `getattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `load` (非GM API)
+- `lower` (非GM API)
+- `makedirs` (非GM API)
+- `map` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `split` (非GM API)
+- `startswith` (非GM API)
+- `strftime` (非GM API)
+- `test_get_trading_session` (非GM API)
+- `to_csv` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_finance_deriv.py
+- `analyze_finance_deriv` (非GM API)
+- `any` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_finance_deriv_to_dict` (非GM API)
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `lower` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `split` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_finance_deriv` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_stk_get_finance_deriv` (非GM API)
+- `to_csv` (非GM API)
+- `to_excel` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_finance_indicator.py
+- `analyze_finance_indicator` (非GM API)
+- `any` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_finance_indicator_to_dict` (非GM API)
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `lower` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `split` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_finance_indicator` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_stk_get_finance_indicator` (非GM API)
+- `to_csv` (非GM API)
+- `to_excel` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_fundamentals_balance_sheet.py
+- `abspath` (非GM API)
+- `add` (非GM API)
+- `analyze_balance_sheet_structure` (非GM API)
+- `append` (非GM API)
+- `balance_sheet_to_dict` (非GM API)
+- `callable` (非GM API)
+- `dir` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `init_api` (非GM API)
+- `isinstance` (非GM API)
+- `items` (非GM API)
+- `keys` (非GM API)
+- `now` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_fundamentals_balance_sheet` (非GM API)
+- `strftime` (非GM API)
+- `test_different_time_periods` (非GM API)
+- `test_edge_cases` (非GM API)
+- `test_multiple_stocks_balance_sheet` (非GM API)
+- `test_single_stock_balance_sheet` (非GM API)
+- `to_csv` (非GM API)
+- `type` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_fundamentals_cash_flow.py
+- `abs` (非GM API)
+- `abspath` (非GM API)
+- `add` (非GM API)
+- `analyze_cash_flow_structure` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `cash_flow_to_dict` (非GM API)
+- `dir` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `init_api` (非GM API)
+- `isinstance` (非GM API)
+- `items` (非GM API)
+- `keys` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `set_token` ✓
+- `sort` (非GM API)
+- `sorted` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_fundamentals_cash_flow` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_cash_flow_analysis` (非GM API)
+- `test_edge_cases` (非GM API)
+- `test_multiple_stocks_cash_flow` (非GM API)
+- `test_seasonal_cash_flow_patterns` (非GM API)
+- `test_single_stock_cash_flow` (非GM API)
+- `to_csv` (非GM API)
+- `type` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_fundamentals_income_statement.py
+- `abspath` (非GM API)
+- `add` (非GM API)
+- `analyze_income_statement_structure` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `dir` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `income_statement_to_dict` (非GM API)
+- `init_api` (非GM API)
+- `isinstance` (非GM API)
+- `items` (非GM API)
+- `keys` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_fundamentals_income_statement` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_edge_cases` (非GM API)
+- `test_high_performance_stocks` (非GM API)
+- `test_multiple_stocks_income_statement` (非GM API)
+- `test_quarterly_vs_annual_data` (非GM API)
+- `test_single_stock_income_statement` (非GM API)
+- `to_csv` (非GM API)
+- `type` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_fundamentals_indicator.py
+- `abspath` (非GM API)
+- `add` (非GM API)
+- `analyze_indicator_structure` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `dir` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `indicator_to_dict` (非GM API)
+- `init_api` (非GM API)
+- `isinstance` (非GM API)
+- `items` (非GM API)
+- `keys` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `not` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `sort` (非GM API)
+- `sorted` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_fundamentals_indicator` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_edge_cases` (非GM API)
+- `test_financial_health_analysis` (非GM API)
+- `test_industry_comparison` (非GM API)
+- `test_multiple_stocks_indicator` (非GM API)
+- `test_single_stock_indicator` (非GM API)
+- `to_csv` (非GM API)
+- `type` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_fundamentals_pit.py
+- `PIT` (非GM API)
+- `abspath` (非GM API)
+- `add` (非GM API)
+- `analyze_pit_structure` (非GM API)
+- `and` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `dir` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `hasattr` (非GM API)
+- `init_api` (非GM API)
+- `isinstance` (非GM API)
+- `items` (非GM API)
+- `keys` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `not` (非GM API)
+- `now` (非GM API)
+- `pit_data_to_dict` (非GM API)
+- `set_token` ✓
+- `sort` (非GM API)
+- `sorted` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_fundamentals_balance_sheet` (非GM API)
+- `stk_get_fundamentals_pit` (非GM API)
+- `strftime` (非GM API)
+- `strptime` (非GM API)
+- `sum` (非GM API)
+- `test_edge_cases` (非GM API)
+- `test_multiple_stocks_pit` (非GM API)
+- `test_pit_vs_regular_comparison` (非GM API)
+- `test_report_type_analysis` (非GM API)
+- `test_single_stock_pit` (非GM API)
+- `test_time_series_pit` (非GM API)
+- `to_csv` (非GM API)
+- `type` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_index_constituents.py
+- `analyze_constituents` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_constituent_to_dict` (非GM API)
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `split` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_index_constituents` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_stk_get_index_constituents` (非GM API)
+- `to_csv` (非GM API)
+- `to_excel` (非GM API)
+- `update` (非GM API)
+
+### api_demos\04_financial_data\demo_stk_get_multi_symbols_trading_info.py
+- `abs` (非GM API)
+- `analyze_multi_symbols_trading_info` (非GM API)
+- `any` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `callable` (非GM API)
+- `convert_trading_info_to_dict` (非GM API)
+- `dir` (非GM API)
+- `dump` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `isinstance` (非GM API)
+- `isoformat` (非GM API)
+- `items` (非GM API)
+- `join` (非GM API)
+- `keys` (非GM API)
+- `load` (非GM API)
+- `lower` (非GM API)
+- `makedirs` (非GM API)
+- `max` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `round` (非GM API)
+- `set_token` ✓
+- `sorted` (非GM API)
+- `split` (非GM API)
+- `startswith` (非GM API)
+- `stk_get_multi_symbols_trading_info` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_stk_get_multi_symbols_trading_info` (非GM API)
+- `to_csv` (非GM API)
+- `to_excel` (非GM API)
+- `update` (非GM API)
+
+### api_demos\05_option_data\demo_get_option_contracts.py
+- `abspath` (非GM API)
+- `analyze_option_contracts` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `get_option_contracts` (非GM API)
+- `getattr` (非GM API)
+- `head` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `option_contract_to_dict` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_option_contracts` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\05_option_data\demo_option_current.py
+- `abspath` (非GM API)
+- `analyze_option_current` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `option_current` (非GM API)
+- `option_tick_to_dict` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_option_current` (非GM API)
+- `to_csv` (非GM API)
+
+### api_demos\05_option_data\demo_option_greeks.py
+- `abs` (非GM API)
+- `abspath` (非GM API)
+- `analyze_greeks` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `greeks_to_dict` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `option_greeks` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `std` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_option_greeks` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\05_option_data\demo_option_history.py
+- `abspath` (非GM API)
+- `analyze_option_history` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `getattr` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `option_bar_to_dict` (非GM API)
+- `option_history` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `sort_values` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_option_history` (非GM API)
+- `to_csv` (非GM API)
+
+### api_demos\06_credit_data\demo_get_credit_balance.py
+- `abspath` (非GM API)
+- `analyze_credit_balance` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `credit_balance_to_dict` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `get_credit_balance` (非GM API)
+- `getattr` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `min` (非GM API)
+- `nlargest` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_credit_balance` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\06_credit_data\demo_get_credit_subjects.py
+- `abspath` (非GM API)
+- `analyze_credit_subjects` (非GM API)
+- `any` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `credit_subject_to_dict` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `get_credit_subjects` (非GM API)
+- `getattr` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `notna` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `std` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_credit_subjects` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `unique` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\06_credit_data\demo_get_credit_transactions.py
+- `abspath` (非GM API)
+- `agg` (非GM API)
+- `analyze_credit_transactions` (非GM API)
+- `any` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `credit_transaction_to_dict` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `get_credit_transactions` (非GM API)
+- `getattr` (非GM API)
+- `groupby` (非GM API)
+- `head` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `items` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `notna` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `reset_index` (非GM API)
+- `set_token` ✓
+- `std` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_credit_transactions` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `unique` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\07_trading_data\demo_get_executions.py
+- `abspath` (非GM API)
+- `analyze_executions` (非GM API)
+- `append` (非GM API)
+- `cut` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `execution_to_dict` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `get_executions` (非GM API)
+- `getattr` (非GM API)
+- `head` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `items` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `sort_index` (非GM API)
+- `std` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_executions` (非GM API)
+- `to_csv` (非GM API)
+- `to_datetime` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\07_trading_data\demo_get_orders.py
+- `abspath` (非GM API)
+- `analyze_orders` (非GM API)
+- `api` (非GM API)
+- `append` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `get_orders` ✓
+- `getattr` (非GM API)
+- `head` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `items` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `now` (非GM API)
+- `order_to_dict` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `std` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_orders` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)
+
+### api_demos\07_trading_data\demo_get_positions.py
+- `abspath` (非GM API)
+- `analyze_positions` (非GM API)
+- `append` (非GM API)
+- `dirname` (非GM API)
+- `dump` (非GM API)
+- `exit` (非GM API)
+- `get` (非GM API)
+- `get_positions` (非GM API)
+- `getattr` (非GM API)
+- `init_api` (非GM API)
+- `insert` (非GM API)
+- `items` (非GM API)
+- `iterrows` (非GM API)
+- `max` (非GM API)
+- `mean` (非GM API)
+- `median` (非GM API)
+- `min` (非GM API)
+- `nlargest` (非GM API)
+- `now` (非GM API)
+- `position_to_dict` (非GM API)
+- `replace` (非GM API)
+- `set_token` ✓
+- `std` (非GM API)
+- `strftime` (非GM API)
+- `sum` (非GM API)
+- `test_get_positions` (非GM API)
+- `to_csv` (非GM API)
+- `to_dict` (非GM API)
+- `value_counts` (非GM API)

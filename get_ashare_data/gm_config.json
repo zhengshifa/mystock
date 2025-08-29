@@ -1,0 +1,6 @@
+{
+  "token": "d5791ecb0f33260e9fd719227c36f5c28b42e11c",
+  "server_addr": "可选：自定义服务器地址",
+  "account_id": "可选：默认账户ID",
+  "note": "配置说明：请将token替换为你从掘金量化官网获取的实际token"
+}

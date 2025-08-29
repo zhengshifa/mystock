@@ -1,0 +1,1027 @@
+[
+  {
+    "name": "Context",
+    "signature": "()",
+    "doc": "策略运行的上下文类. 这在整个进程中要保证是单一实例\n注意: 一个运行的python进程只能运行一个策略.\n警告: 客户写的策略代码不要直接使用这个类来实例化, 而是使用 sdk 实例化好的 context 实例"
+  },
+  {
+    "name": "GmError",
+    "signature": "(status, message, function)",
+    "doc": "掘金SDK自定义错误"
+  },
+  {
+    "name": "add_parameter",
+    "signature": "(key, value, min=0, max=0, name='', intro='', group='', readonly=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "algo_order",
+    "signature": "(symbol, volume, side, order_type, position_effect, price, algo_name, algo_param, account='')",
+    "doc": "委托算法单. 返回列表里字典项是AlgoOrder的字段\n:param algo_param 为必填参数, 且只能是 dict 且必须包含4个必要的key"
+  },
+  {
+    "name": "algo_order_batch",
+    "signature": "(algo_orders, algo_name, algo_param, account='')",
+    "doc": "委托算法单. 返回列表里字典项是AlgoOrder的字段\n:param algo_param 为必填参数, 且只能是 dict 且必须包含4个必要的key"
+  },
+  {
+    "name": "algo_order_cancel",
+    "signature": "(wait_cancel_orders)",
+    "doc": "撤单算法委托. 传入单个字典. 或者list字典. 每个字典包含key:\ncl_ord_id\naccount_id  默认帐号时为 ''"
+  },
+  {
+    "name": "algo_order_pause",
+    "signature": "(alorders)",
+    "doc": "暂停/恢复算法单. 传入单个字典. 或者list字典. 每个字典包含key:\ncl_ord_id\naccount_id  默认帐号时为 ''\nstatus      参见 AlgoOrderStatus_ 开头的常量"
+  },
+  {
+    "name": "algo_smart_reorder",
+    "signature": "(symbol, price, volume, side, position_effect, repeat_n, max_price_offset, time_out, time_wait, account='')",
+    "doc": "智能追单委托"
+  },
+  {
+    "name": "algo_smart_reorder_cancel",
+    "signature": "(reorder_id)",
+    "doc": "智能追单撤销"
+  },
+  {
+    "name": "bnd_get_amount_change",
+    "signature": "(symbol, start_date='', end_date='')",
+    "doc": "查询可转债剩余规模变动信息"
+  },
+  {
+    "name": "bnd_get_analysis",
+    "signature": "(symbol, start_date=None, end_date=None)",
+    "doc": "无文档"
+  },
+  {
+    "name": "bnd_get_call_info",
+    "signature": "(symbol, start_date='', end_date='')",
+    "doc": "查询可转债赎回信息"
+  },
+  {
+    "name": "bnd_get_conversion_price",
+    "signature": "(symbol, start_date='', end_date='')",
+    "doc": "查询可转债转股价变动信息"
+  },
+  {
+    "name": "bnd_get_put_info",
+    "signature": "(symbol, start_date='', end_date='')",
+    "doc": "查询可转债回售信息"
+  },
+  {
+    "name": "bond_convertible_call",
+    "signature": "(symbol, volume, price=0.0, account_id='')",
+    "doc": "可转债转股\n:param symbol:                  标的\n:param volume:                  数量\n:param price:                   价格\n:param account_id:              账户ID，不指定则使用默认账户\n:return:"
+  },
+  {
+    "name": "bond_convertible_get_call_info",
+    "signature": "(symbols=None, start_date=None, end_date=None)",
+    "doc": "查询可转债赎回信息"
+  },
+  {
+    "name": "bond_convertible_put",
+    "signature": "(symbol, volume, price=0.0, account_id='')",
+    "doc": "可转债回售\n:param symbol:                  标的\n:param volume:                  数量\n:param price:                   价格\n:param account_id:              账户ID，不指定则使用默认账户\n:return:"
+  },
+  {
+    "name": "bond_convertible_put_cancel",
+    "signature": "(symbol, volume, account_id='')",
+    "doc": "可转债回售撤销\n:param symbol:                  标的\n:param volume:                  数量\n:param account_id:              账户ID，不指定则使用默认账户\n:return:"
+  },
+  {
+    "name": "bond_reverse_repurchase_agreement",
+    "signature": "(symbol, volume, price, order_type=1, order_duration=0, order_qualifier=0, account_id='')",
+    "doc": "国债逆回购\n:param symbol:                  标的\n:param volume:                  数量\n:param price:                   价格\n:param order_type:              委托类型\n:param order_duration:          委托时间属性\n:param order_..."
+  },
+  {
+    "name": "credit_buying_on_collateral",
+    "signature": "(symbol, volume, price, order_type=1, order_duration=0, order_qualifier=0, account_id='')",
+    "doc": "担保品买入\n:param symbol:              标的\n:param volume:              数量\n:param price:               委托价格\n:param order_type:          委托订单类型\n:param order_duration:      委托时间属性\n:param order_qualifier:     委..."
+  },
+  {
+    "name": "credit_buying_on_margin",
+    "signature": "(position_src, symbol, volume, price, order_type=1, order_duration=0, order_qualifier=0, account_id='')",
+    "doc": "融资买入\n:param symbol:              标的\n:param volume:              数量\n:param price:               委托价格\n:param order_type:          委托订单类型\n:param order_duration:      委托时间属性\n:param order_qualifier:     委托..."
+  },
+  {
+    "name": "credit_collateral_in",
+    "signature": "(symbol, volume, account_id='')",
+    "doc": "担保品转入\n:param symbol:              标的\n:param volume:              数量\n:param account_id:          账号id\n:return:"
+  },
+  {
+    "name": "credit_collateral_out",
+    "signature": "(symbol, volume, account_id='')",
+    "doc": "担保品转出\n:param symbol:              标的\n:param volume:              数量\n:param account_id:          账号id\n:return:"
+  },
+  {
+    "name": "credit_get_borrowable_instruments",
+    "signature": "(position_src, account_id='', df=False)",
+    "doc": "查询标的证券，可做融券标的股票列表\n:param position_src: 头寸来源(仅适用融资融券)，取值参考enum PositionSrc\n:param account_id:  账号id\n:param df:          是否返回DataFrame格式数据\n:return:"
+  },
+  {
+    "name": "credit_get_borrowable_instruments_positions",
+    "signature": "(position_src, account_id='', df=False)",
+    "doc": "查询券商融券账户头寸，可用融券的数量\n:param position_src: 头寸来源(仅适用融资融券)，取值参考enum PositionSrc\n:param account_id:  账号id\n:param df:          是否返回DataFrame格式数据\n:return:"
+  },
+  {
+    "name": "credit_get_cash",
+    "signature": "(account_id='')",
+    "doc": "查询融资融券资金\n:param account_id:  账号id\n:return:"
+  },
+  {
+    "name": "credit_get_collateral_instruments",
+    "signature": "(account_id='', df=False)",
+    "doc": "查询担保证券，可做担保品股票列表\n:param account_id:  账号id\n:param df:          是否返回DataFrame格式数据\n:return:"
+  },
+  {
+    "name": "credit_get_contracts",
+    "signature": "(position_src, account_id='', df=False)",
+    "doc": "查询融资融券合约\n:param position_src: 头寸来源(仅适用融资融券)，取值参考enum PositionSrc\n:param account_id:  账号id\n:param df:          是否返回DataFrame格式数据\n:return:"
+  },
+  {
+    "name": "credit_repay_cash_by_selling_share",
+    "signature": "(symbol, volume, price, *, repay_type=0, position_src=0, order_type=1, order_duration=0, order_qualifier=0, contract_id=None, account_id='', sno='')",
+    "doc": "卖券还款\n:param symbol:              标的\n:param volume:              数量\n:param price:               委托价格\n:param order_type:          委托订单类型\n:param order_duration:      委托时间属性\n:param order_qualifier:     委托..."
+  },
+  {
+    "name": "credit_repay_cash_directly",
+    "signature": "(amount, *, repay_type=0, position_src=0, contract_id=None, account_id='', sno='', bond_fee_only=False)",
+    "doc": "直接还款\n:param account_id:      账号ID\n:param amount:          金额\n:param sno:             合约编号\n:param bond_fee_only:   是否仅偿还利息\n:return:"
+  },
+  {
+    "name": "credit_repay_share_by_buying_share",
+    "signature": "(symbol, volume, price, *, position_src=0, order_type=1, order_duration=0, order_qualifier=0, contract_id=None, account_id='', sno='')",
+    "doc": "买券还券\n:param symbol:              标的\n:param volume:              数量\n:param price:               委托价格\n:param order_type:          委托订单类型\n:param order_duration:      委托时间属性\n:param order_qualifier:     委托..."
+  },
+  {
+    "name": "credit_repay_share_directly",
+    "signature": "(symbol, volume, *, position_src=0, contract_id=None, account_id='', sno='')",
+    "doc": "直接还券\n:param symbol:              标的\n:param volume:              数量\n:param account_id:          账号id\n:param sno:                 合约编号\n:return:"
+  },
+  {
+    "name": "credit_selling_on_collateral",
+    "signature": "(symbol, volume, price, order_type=1, order_duration=0, order_qualifier=0, account_id='')",
+    "doc": "担保品卖出\n:param symbol:              标的\n:param volume:              数量\n:param price:               委托价格\n:param order_type:          委托订单类型\n:param order_duration:      委托时间属性\n:param order_qualifier:     委..."
+  },
+  {
+    "name": "credit_short_selling",
+    "signature": "(position_src, symbol, volume, price, order_type=1, order_duration=0, order_qualifier=0, account_id='')",
+    "doc": "融券卖出\n:param position_src:        头寸来源(仅适用融资融券)，取值参考enum PositionSrc\n:param symbol:              标的\n:param volume:              数量\n:param price:               委托价格\n:param order_type:          委托订单类型\n:p..."
+  },
+  {
+    "name": "current",
+    "signature": "(symbols, fields='', include_call_auction=False)",
+    "doc": "查询当前行情快照, 返回tick数据"
+  },
+  {
+    "name": "current_price",
+    "signature": "(symbols)",
+    "doc": "查询当前行情快照, 返回tick数据"
+  },
+  {
+    "name": "exit_handler",
+    "signature": "()",
+    "doc": "无文档"
+  },
+  {
+    "name": "fnd_get_adj_factor",
+    "signature": "(fund, start_date='', end_date='', base_date='')",
+    "doc": "查询基金复权因子"
+  },
+  {
+    "name": "fnd_get_dividend",
+    "signature": "(fund, start_date, end_date)",
+    "doc": "查询基金分红信息"
+  },
+  {
+    "name": "fnd_get_etf_constituents",
+    "signature": "(etf)",
+    "doc": "查询ETF最新成分股"
+  },
+  {
+    "name": "fnd_get_net_value",
+    "signature": "(fund, start_date='', end_date='')",
+    "doc": "查询基金的净值数据"
+  },
+  {
+    "name": "fnd_get_portfolio",
+    "signature": "(fund, report_type, portfolio_type, start_date='', end_date='')",
+    "doc": "查询基金的资产组合"
+  },
+  {
+    "name": "fnd_get_share",
+    "signature": "(fund, start_date=None, end_date=None)",
+    "doc": "无文档"
+  },
+  {
+    "name": "fnd_get_split",
+    "signature": "(fund, start_date, end_date)",
+    "doc": "查询基金分红信息"
+  },
+  {
+    "name": "fund_buy",
+    "signature": "(symbol, volume, account_id='')",
+    "doc": "基金申购\n:param symbol:          标的\n:param volume:          数量\n:param account_id:      账户ID，不指定这使用默认账户\n:return:"
+  },
+  {
+    "name": "fund_etf_buy",
+    "signature": "(symbol, volume, price, account_id='')",
+    "doc": "ETF申购\n:param symbol:          标的\n:param volume:          数量\n:param price:           价格\n:param account_id:      账户ID，不指定则使用默认账户\n:return:"
+  },
+  {
+    "name": "fund_etf_redemption",
+    "signature": "(symbol, volume, price, account_id='')",
+    "doc": "ETF赎回\n:param symbol:          标的\n:param volume:          数量\n:param price:           价格\n:param account_id:      账户ID，不指定则使用默认账户\n:return:"
+  },
+  {
+    "name": "fund_redemption",
+    "signature": "(symbol, volume, account_id='')",
+    "doc": "基金赎回\n:param symbol:          标的\n:param volume:          数量\n:param account_id:      账户ID，不指定这使用默认账户\n:return:"
+  },
+  {
+    "name": "fund_subscribing",
+    "signature": "(symbol, volume, account_id='')",
+    "doc": "基金认购\n:param symbol:          标的\n:param volume:          数量\n:param account_id:      账户ID，不指定这使用默认账户\n:return:"
+  },
+  {
+    "name": "fut_get_continuous_contracts",
+    "signature": "(csymbol, start_date='', end_date='')",
+    "doc": "查询连续合约对应的真实合约"
+  },
+  {
+    "name": "fut_get_contract_info",
+    "signature": "(product_codes, df=False)",
+    "doc": "查询期货标准品种信息"
+  },
+  {
+    "name": "fut_get_transaction_ranking",
+    "signature": "(symbol, trade_date='', indicator='volume')",
+    "doc": "查询期货每日成交持仓排名"
+  },
+  {
+    "name": "fut_get_transaction_rankings",
+    "signature": "(symbols, trade_date='', indicators='volume')",
+    "doc": "查询期货每日成交持仓排名"
+  },
+  {
+    "name": "fut_get_warehouse_receipt",
+    "signature": "(product_code, start_date='', end_date='')",
+    "doc": "查询期货仓单数据"
+  },
+  {
+    "name": "get_algo_child_orders",
+    "signature": "(cl_ord_id, account='')",
+    "doc": "查询算法子委托. 返回列表里字典项是Order的字段"
+  },
+  {
+    "name": "get_algo_orders",
+    "signature": "(account='')",
+    "doc": "查询算法委托. 返回列表里字典项是AlgoOrder的字段"
+  },
+  {
+    "name": "get_cash",
+    "signature": "(account_id=None)",
+    "doc": "查询指定账户资金"
+  },
+  {
+    "name": "get_concept",
+    "signature": "(code)",
+    "doc": "查询概念股票列表"
+  },
+  {
+    "name": "get_constituents",
+    "signature": "(index, fields=None, df=False)",
+    "doc": "查询指数最新成分股(已弃用, 请切换新版数据函数stk_get_index_constituents)\n返回的list每项是个字典,包含的key值有:\nsymbol 股票symbol\nweight 权重"
+  },
+  {
+    "name": "get_continuous_contracts",
+    "signature": "(csymbol, start_date=None, end_date=None)",
+    "doc": "获取连续合约"
+  },
+  {
+    "name": "get_contract_expire_rest_days",
+    "signature": "(symbols, start_date='', end_date='', trade_flag=False, df=False)",
+    "doc": "查询合约到期剩余天数"
+  },
+  {
+    "name": "get_dividend",
+    "signature": "(symbol, start_date, end_date=None, df=False)",
+    "doc": "查询分红送配"
+  },
+  {
+    "name": "get_execution_reports",
+    "signature": "()",
+    "doc": "返回执行回报"
+  },
+  {
+    "name": "get_expire_rest_days",
+    "signature": "(symbols=None, trade_date=None, trading_days=False, df=False)",
+    "doc": "查询到期剩余天数"
+  },
+  {
+    "name": "get_fundamentals",
+    "signature": "(table, symbols, start_date, end_date, fields=None, filter=None, order_by=None, limit=1000, df=False)",
+    "doc": "查询基本面财务数据(已弃用)"
+  },
+  {
+    "name": "get_fundamentals_n",
+    "signature": "(table, symbols, end_date, fields='', filter='', order_by='', count=1, df=False)",
+    "doc": "查询基本面财务数据,每个股票在end_date的前n条(已弃用)"
+  },
+  {
+    "name": "get_history_bars_l2",
+    "signature": "(symbols, frequency, start_time, end_time, fields=None, skip_suspended=True, fill_missing=None, adjust=0, adjust_end_time='', df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_history_constituents",
+    "signature": "(index, start_date=None, end_date=None)",
+    "doc": "查询指数历史成分股(已弃用, 请切换新版数据函数stk_get_index_constituents)\n返回的list每项是个字典,包含的key值有:\ntrade_date: 交易日期(datetime类型)\nconstituents: 一个字典. 每个股票的sybol做为key值, weight做为value值"
+  },
+  {
+    "name": "get_history_instruments",
+    "signature": "(symbols, fields=None, start_date=None, end_date=None, df=False)",
+    "doc": "返回指定的symbols的标的日指标数据"
+  },
+  {
+    "name": "get_history_l2bars",
+    "signature": "(symbols, frequency, start_time, end_time, fields=None, skip_suspended=True, fill_missing=None, adjust=0, adjust_end_time='', df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_history_l2orders",
+    "signature": "(symbols, start_time, end_time, fields=None, df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_history_l2orders_queue",
+    "signature": "(symbols, start_time, end_time, fields=None, df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_history_l2ticks",
+    "signature": "(symbols, start_time, end_time, fields=None, skip_suspended=True, fill_missing=None, adjust=0, adjust_end_time='', df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_history_l2transactions",
+    "signature": "(symbols, start_time, end_time, fields=None, df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_history_symbol",
+    "signature": "(symbol, start_date='', end_date='', df=False)",
+    "doc": "查询指定标的多日交易信息"
+  },
+  {
+    "name": "get_history_ticks_l2",
+    "signature": "(symbols, start_time, end_time, fields=None, skip_suspended=True, fill_missing=None, adjust=0, adjust_end_time='', df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_history_transaction_l2",
+    "signature": "(symbols, start_time, end_time, fields=None, df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_industry",
+    "signature": "(code)",
+    "doc": "查询行业股票列表(已弃用, 请切换新版数据函数stk_get_industry_constituents)"
+  },
+  {
+    "name": "get_instrumentinfos",
+    "signature": "(symbols=None, exchanges=None, sec_types=None, names=None, fields=None, df=False)",
+    "doc": "查询交易标的基本信息\n如果没有数据的话,返回空列表. 有的话, 返回list[dict]这样的列表. 其中 listed_date, delisted_date 为 datetime 类型\n@:param fields: 可以是 'symbol, sec_type' 这样的字符串, 也可以是 ['symbol', 'sec_type'] 这样的字符list"
+  },
+  {
+    "name": "get_instruments",
+    "signature": "(symbols=None, exchanges=None, sec_types=None, names=None, skip_suspended=True, skip_st=True, fields=None, df=False)",
+    "doc": "查询最新交易标的信息,有基本数据及最新日频数据"
+  },
+  {
+    "name": "get_next_n_trading_dates",
+    "signature": "(exchange, date, n=1)",
+    "doc": "查询指定日期的后n个交易日"
+  },
+  {
+    "name": "get_next_trading_date",
+    "signature": "(exchange, date)",
+    "doc": "返回指定日期的下一个交易日\n@:param exchange: 交易市场\n@:param date: 指定日期, 可以是datetime.date 或者 datetime.datetime 类型. 或者是 yyyy-mm-dd 或 yyyymmdd 格式的字符串\n@:return 返回下一交易日, 为 yyyy-mm-dd 格式的字符串, 如果不存在则返回None"
+  },
+  {
+    "name": "get_open_call_auction",
+    "signature": "(symbols, trade_date=None)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_orders",
+    "signature": "()",
+    "doc": "查询日内全部委托"
+  },
+  {
+    "name": "get_orders_mm",
+    "signature": "(symbol='', order_ids='', account_id='')",
+    "doc": "查询日内所有做市委托"
+  },
+  {
+    "name": "get_position",
+    "signature": "(account_id=None)",
+    "doc": "查询指定账户所有持仓"
+  },
+  {
+    "name": "get_previous_n_trading_dates",
+    "signature": "(exchange, date, n=1)",
+    "doc": "查询指定日期的前n个交易日"
+  },
+  {
+    "name": "get_previous_trading_date",
+    "signature": "(exchange, date)",
+    "doc": "返回指定日期的上一个交易日\n@:param exchange: 交易市场\n@:param date: 指定日期, 可以是datetime.date 或者 datetime.datetime 类型. 或者是 yyyy-mm-dd 或 yyyymmdd 格式的字符串\n@:return 返回下一交易日, 为 yyyy-mm-dd 格式的字符串, 如果不存在则返回None"
+  },
+  {
+    "name": "get_sector",
+    "signature": "(code)",
+    "doc": "查询板块股票列表"
+  },
+  {
+    "name": "get_strerror",
+    "signature": "(error_code)",
+    "doc": "无文档"
+  },
+  {
+    "name": "get_symbol_infos",
+    "signature": "(sec_type1, sec_type2=0, exchanges=None, symbols=None, df=False)",
+    "doc": "查询标的基本信息"
+  },
+  {
+    "name": "get_symbols",
+    "signature": "(sec_type1, sec_type2=0, exchanges=None, symbols=None, skip_suspended=True, skip_st=True, trade_date='', df=False)",
+    "doc": "查询指定交易日多标的交易信息"
+  },
+  {
+    "name": "get_trading_dates",
+    "signature": "(exchange, start_date, end_date)",
+    "doc": "查询交易日列表\n如果指定的市场不存在, 返回空列表. 有值的话,返回 yyyy-mm-dd 格式的列表"
+  },
+  {
+    "name": "get_trading_dates_by_year",
+    "signature": "(exchange, start_year, end_year)",
+    "doc": "查询年度交易日历"
+  },
+  {
+    "name": "get_trading_session",
+    "signature": "(symbols, df=False)",
+    "doc": "查询交易日的可交易时段"
+  },
+  {
+    "name": "get_trading_times",
+    "signature": "(variety_names='')",
+    "doc": "查询品种的交易时段 \n\nparams: \n\n     variety_names:           品种名称(全部大写)\nreturn: \n\n     variety_name:            品种名称(全部大写)\n     time_trading:            交易时段, 如[{'start': '09:30','end': '11:30'}, {'start': '13..."
+  },
+  {
+    "name": "get_unfinished_orders",
+    "signature": "()",
+    "doc": "查询所有未结委托"
+  },
+  {
+    "name": "get_unfinished_orders_mm",
+    "signature": "(symbol='', order_ids='', account_id='')",
+    "doc": "查询日内所有未结的做市委托"
+  },
+  {
+    "name": "get_varietyinfos",
+    "signature": "(variety_names='', fields=None, df=False)",
+    "doc": "查询品种信息\n\nVarietyInfo:\n    variety_name        品种名称\n\n    sec_type                   \n\n    sec_type_ext        扩展类型\n\n    exchange            交易市场代码\n\n    quote_unit          报价单位\n\n    price_tick          ..."
+  },
+  {
+    "name": "get_version",
+    "signature": "()",
+    "doc": "无文档"
+  },
+  {
+    "name": "history",
+    "signature": "(symbol, frequency, start_time, end_time, fields=None, skip_suspended=True, fill_missing=None, adjust=None, adjust_end_time='', df=False)",
+    "doc": "查询历史行情"
+  },
+  {
+    "name": "history_n",
+    "signature": "(symbol, frequency, count, end_time=None, fields=None, skip_suspended=True, fill_missing=None, adjust=None, adjust_end_time='', df=False)",
+    "doc": "查询历史行情"
+  },
+  {
+    "name": "ipo_buy",
+    "signature": "(symbol, volume, price, account_id='')",
+    "doc": "新股/新债申购\n:param symbol:          标的\n:param volume:          数量\n:param price:           价格\n:param account_id:      账户ID，不指定则使用默认账户\n:return:"
+  },
+  {
+    "name": "ipo_get_instruments",
+    "signature": "(sec_type, account_id='', df=False)",
+    "doc": "查询当日新股/新债清单\n:param account_id:      账户ID，不指定则使用默认账户\n:param df:              是否显示为 DataFrame\n:return:"
+  },
+  {
+    "name": "ipo_get_lot_info",
+    "signature": "(start_time, end_time, account_id='', df=False)",
+    "doc": "中签查询\n:param account_id:      账户ID，不指定则使用默认账户\n:param df:              是否显示为 DataFrame\n:return:"
+  },
+  {
+    "name": "ipo_get_match_number",
+    "signature": "(start_time, end_time, account_id='', df=False)",
+    "doc": "配号查询\n:param start_time: 开始时间\n:param end_time: 结束时间\n:param account_id: 账号id\n:param df:\n:return:"
+  },
+  {
+    "name": "ipo_get_quota",
+    "signature": "(account_id='')",
+    "doc": "查询新股申购额度\n:param account_id:  账户ID，不指定则使用默认账户\n:return:"
+  },
+  {
+    "name": "last_tick",
+    "signature": "(symbols, fields='', include_call_auction=False)",
+    "doc": "查询当前行情快照, 返回tick数据"
+  },
+  {
+    "name": "log",
+    "signature": "(level, msg, source)",
+    "doc": "无文档"
+  },
+  {
+    "name": "option_calculate_delta",
+    "signature": "(s, k, v, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15, cash=False)",
+    "doc": "计算期权delta \n\nparams: \n\n     s:               标的物价格\n     k:               执行价格(行权价)\n     v:               波动率，例0.16\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedelta(365..."
+  },
+  {
+    "name": "option_calculate_gamma",
+    "signature": "(s, k, v, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15, cash=False)",
+    "doc": "计算期权gamma \n\nparams: \n\n     s:               标的物价格\n     k:               执行价格(行权价)\n     v:               波动率，例0.16\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedelta(365..."
+  },
+  {
+    "name": "option_calculate_greeks",
+    "signature": "(s, k, v, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15, cash=False)",
+    "doc": "计算期权全部希腊字母greeks \n\nparams:\n\n     s:               标的物价格\n     k:               执行价格(行权价)\n     v:               波动率，例0.16\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedel..."
+  },
+  {
+    "name": "option_calculate_hv",
+    "signature": "(price, frequency='1d')",
+    "doc": "计算期权历史波动率hv \n\nparams:\n     price:       标的物价格\n     frequency:   频率, 支持 'tick', '1d', '15s', '30s' 等,详情见股票行情数据和期货行情数据"
+  },
+  {
+    "name": "option_calculate_iv",
+    "signature": "(p, s, k, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15)",
+    "doc": "计算期权隐含波动率 \n\nparams: \n\n     p:               期权价格\n     s:               标的物价格\n     k:               执行价格(行权价)\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedelta(365)\n   ..."
+  },
+  {
+    "name": "option_calculate_ivsurface",
+    "signature": "(underlying_symbol, call_or_put, trade_date=datetime.datetime(2025, 8, 25, 15, 40, 2, 640277), adjust_flag=None, r=0.02, pricing_model='black_scholes', n=15)",
+    "doc": "计算隐含波动率曲面 \n\nparams:\n     underlying_symbol:       标的物symbol，全部大写，不指定具体到期月份, 例'DCE.V'\n     call_or_put:             认购：'C'/认沽：'P'\n     trade_date:              交易时间，默认当前最新时间\n     adjust_flag:          ..."
+  },
+  {
+    "name": "option_calculate_price",
+    "signature": "(s, k, v, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15)",
+    "doc": "计算期权理论价格 \n\nparams: \n\n     s:               标的物价格\n     k:               执行价格(行权价)\n     v:               波动率，例0.16\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedelta(365)..."
+  },
+  {
+    "name": "option_calculate_rho",
+    "signature": "(s, k, v, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15, cash=False)",
+    "doc": "计算期权rho \n\nparams: \n\n     s:               标的物价格\n     k:               执行价格(行权价)\n     v:               波动率，例0.16\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedelta(365)\n..."
+  },
+  {
+    "name": "option_calculate_t",
+    "signature": "(start_time=datetime.datetime(2025, 8, 25, 15, 40, 2, 640277), end_time='')",
+    "doc": "计算剩余时间 \n\nparams:\n\n     start_time:      开始时间，默认当前时间\n     end_time:        结束时间(通常为退市时间，必填)\nstart_time和start_time必须是pd.to_dateime()可识别的字符串str格式，\n例'yyyy-mm-dd', 'yyyy-mm-dd %H:%M:%S',或者是datetime对象"
+  },
+  {
+    "name": "option_calculate_theta",
+    "signature": "(s, k, v, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15, cash=False)",
+    "doc": "计算期权theta \n\nparams: \n\n     s:               标的物价格\n     k:               执行价格(行权价)\n     v:               波动率，例0.16\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedelta(365..."
+  },
+  {
+    "name": "option_calculate_vega",
+    "signature": "(s, k, v, t, call_or_put, r=0.02, pricing_model='black_scholes', n=15, cash=False)",
+    "doc": "计算期权vega \n\nparams: \n\n     s:               标的物价格\n     k:               执行价格(行权价)\n     v:               波动率，例0.16\n     t:               剩余时间，例(datetime(2021, 7, 28, 15) - datetime.now())/timedelta(365)..."
+  },
+  {
+    "name": "option_comb",
+    "signature": "(optcomb_code, volume, first_symbol, first_opthold_type, first_opthold_covered_flag, second_symbol=None, second_opthold_type=None, second_opthold_covered_flag=None, account_id='')",
+    "doc": "组合申报委托, 指定组合策略编码、两腿合约信息和组合委托数量进行组合申报\n\n普通转备兑(optcomb_code='ZBD')时, 第二腿合约参数second_symbol, second_opthold_type, second_opthold_covered_flag 不需要指定, 若指定也无效.\n除此之外其余组合，第二腿合约参数必填"
+  },
+  {
+    "name": "option_comb_by_comb_info",
+    "signature": "(comb_info, account_id='')",
+    "doc": "可组合申报, 指定可组合策略对象并按组合可用数量进行组合申报"
+  },
+  {
+    "name": "option_covered_close",
+    "signature": "(symbol, volume, order_type, price=0, account='')",
+    "doc": "备兑平仓 \n\nreturn:\n    list[order]"
+  },
+  {
+    "name": "option_covered_open",
+    "signature": "(symbol, volume, order_type, price=0.0, account='')",
+    "doc": "备兑开仓 \n\nreturn:\n    list[order]"
+  },
+  {
+    "name": "option_exercise",
+    "signature": "(symbol, volume, account='')",
+    "doc": "行权"
+  },
+  {
+    "name": "option_get_comb_info",
+    "signature": "(exchange, optcomb_code, account_id='')",
+    "doc": "可组合策略查询, 查询当前期权持仓中，可组合成特定组合的信息，包括策略编码，策略名称，组合可用数量等信息"
+  },
+  {
+    "name": "option_get_comb_pos",
+    "signature": "(optcomb_code='', account_id='')",
+    "doc": "组合策略持仓查询, 查询当前组合策略持仓信息，可拆分成普通持仓的组合策略代码，策略名称，组合编码，可用数量等信息"
+  },
+  {
+    "name": "option_get_delisted_dates",
+    "signature": "(underlying_symbol='', trade_date=None, execute_month=0)",
+    "doc": "查询期权到期日列表 \n\nparams: \n\n     underlying_symbol:       标的物symbol, 全部大写, 不指定具体到期月份, 例'DCE.V'\n     trade_date:              交易时间, 默认当前最新时间\n     execute_month:           合约月份, 1-当月, 2-下月, 3-下季, 4-隔季,\n      ..."
+  },
+  {
+    "name": "option_get_exercise_prices",
+    "signature": "(underlying_symbol='', trade_date=None, execute_month=0, adjust_flag='')",
+    "doc": "查询期权行权价列表 \n\nparams: \n\n     underlying_symbol:       标的物symbol, 全部大写, 不指定具体到期月份, 例'DCE.V'\n     trade_date:              交易时间, 默认当前最新时间\n     execute_month:           合约月份, 1-当月, 2-下月, 3-下季, 4-隔季,\n      ..."
+  },
+  {
+    "name": "option_get_symbols_by_exchange",
+    "signature": "(exchange=None, trade_date=None, call_or_put='', adjust_flag='')",
+    "doc": "查询期权合约 \n\nreturn:\n    list[symbol]"
+  },
+  {
+    "name": "option_get_symbols_by_in_at_out",
+    "signature": "(underlying_symbol=None, trade_date=None, execute_month=None, call_or_put=None, in_at_out=None, s=None, adjust_flag='')",
+    "doc": "查询实平虚值某档合约 \n\nreturn:z\n    list[symbol]"
+  },
+  {
+    "name": "option_preorder_sell_margin",
+    "signature": "(symbol, account='')",
+    "doc": "计算期权卖方开仓保证金 \n\nparams: \n\n     symbol:              期权合约代码,如SHSE.10002498"
+  },
+  {
+    "name": "option_preorder_valid_volume",
+    "signature": "(symbol, price, side, covered_flag=0, account='')",
+    "doc": "获取可开数量 \n\nparams: \n\n     symbol:              标的代码\n     price:               用户指定价格\n     side:                订单委托方向\n     covered_flag:        备兑标志\n     account:             账户"
+  },
+  {
+    "name": "option_sep",
+    "signature": "(optcomb_id, optcomb_code, volume, first_symbol, first_opthold_type, first_opthold_covered_flag, second_symbol=None, second_opthold_type=None, second_opthold_covered_flag=None, account_id='')",
+    "doc": "拆分申报委托, 指定组合编码和委托数量进行拆分申报"
+  },
+  {
+    "name": "option_sep_by_comb_pos",
+    "signature": "(comb_pos, account_id='')",
+    "doc": "组合持仓拆分申报, 指定组合策略持仓对象并按可用数量进行拆分申报"
+  },
+  {
+    "name": "order_batch",
+    "signature": "(order_infos, combine=False, account='')",
+    "doc": "批量委托接口"
+  },
+  {
+    "name": "order_cancel",
+    "signature": "(wait_cancel_orders)",
+    "doc": "撤销委托. 传入单个字典. 或者list字典. 每个字典包含key: cl_ord_id, account_id"
+  },
+  {
+    "name": "order_cancel_all",
+    "signature": "()",
+    "doc": "撤销所有委托"
+  },
+  {
+    "name": "order_close_all",
+    "signature": "()",
+    "doc": "平当前所有可平持仓"
+  },
+  {
+    "name": "order_percent",
+    "signature": "(symbol, percent, side, order_type, position_effect, price=0, order_duration=0, order_qualifier=0, account='')",
+    "doc": "按指定比例委托"
+  },
+  {
+    "name": "order_target_percent",
+    "signature": "(symbol, percent, position_side, order_type, price=0, order_duration=0, order_qualifier=0, account='')",
+    "doc": "调仓到目标持仓比例"
+  },
+  {
+    "name": "order_target_value",
+    "signature": "(symbol, value, position_side, order_type, price=0, order_duration=0, order_qualifier=0, account='')",
+    "doc": "调仓到目标持仓额"
+  },
+  {
+    "name": "order_target_volume",
+    "signature": "(symbol, volume, position_side, order_type, price=0, order_duration=0, order_qualifier=0, account='')",
+    "doc": "调仓到目标持仓量"
+  },
+  {
+    "name": "order_value",
+    "signature": "(symbol, value, side, order_type, position_effect, price=0, order_duration=0, order_qualifier=0, account='')",
+    "doc": "按指定价值委托"
+  },
+  {
+    "name": "order_volume",
+    "signature": "(symbol, volume, side, order_type, position_effect, price=0, trigger_type=0, stop_price=0, order_duration=0, order_qualifier=0, account='')",
+    "doc": "按指定量委托"
+  },
+  {
+    "name": "place_order_mm",
+    "signature": "(symbol, buy_volume=0, buy_price=0.0, sell_volume=0, sell_price=0.0, order_auto_fill=True, price_br=None, account_id='')",
+    "doc": "做市报价委托"
+  },
+  {
+    "name": "py_gmi_set_version",
+    "signature": "(*args, **kwargs)",
+    "doc": "无文档"
+  },
+  {
+    "name": "raw_func",
+    "signature": "(account_id, func_id, func_args)",
+    "doc": "功能码调用\n:param account_id:  资金账户id\n:param func_id:     功能码id\n:param func_args:   功能码参数\n:return:"
+  },
+  {
+    "name": "run",
+    "signature": "(strategy_id='', filename='', mode=0, token='', backtest_start_time='', backtest_end_time='', backtest_initial_cash=1000000, backtest_transaction_ratio=1, backtest_commission_ratio=0, backtest_commission_unit=0, backtest_slippage_ratio=0, backtest_marginfloat_ratio1=0.2, backtest_marginfloat_ratio2=0.4, backtest_adjust=0, backtest_check_cache=1, serv_addr='', backtest_match_mode=0, backtest_intraday=0)",
+    "doc": "执行策略"
+  },
+  {
+    "name": "schedule",
+    "signature": "(schedule_func, date_rule, time_rule)",
+    "doc": "定时任务. 这里的schedule_func 要求只能有一个context参数的函数"
+  },
+  {
+    "name": "set_account_id",
+    "signature": "(account_id)",
+    "doc": "预设账号"
+  },
+  {
+    "name": "set_mfp",
+    "signature": "(mfp)",
+    "doc": "根据合规要求, 设置相关mfp信息。mfp信息, 键值使用key=value的形式拼接。多个键值对之间用竖线(“|”)分隔。\n如 \"cpu=xxxx|fdsn=yyyyy|...\"。\n\n信息项如下:\n\nCPU   string  // CPU 信息\n\nFDSN  string // Hard Disk Serieal Number (compatible old spec)\n\nHD    stri..."
+  },
+  {
+    "name": "set_option",
+    "signature": "(max_wait_time=3600000, backtest_thread_num=1, ctp_md_info={})",
+    "doc": "设置策略运行系统选项\n\n参数\n----\nmax_wait_time: api调用触发流控(超出单位时间调用次数)时, 允许系统冷却的最大等待时间(单位: 毫秒).\n    若系统冷却需要时间>设定的最大等待时间, api调用失败, 返回流控错误, 需要策略自行处理(如捕获错误提示\n    后等待对应时间). 默认`max_wait_time=3600000`, 即最大`3600000`毫秒, 可设..."
+  },
+  {
+    "name": "set_parameter",
+    "signature": "(key, value, min=0, max=0, name='', intro='', group='', readonly=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "set_serv_addr",
+    "signature": "(addr)",
+    "doc": "设置终端服务地址"
+  },
+  {
+    "name": "set_serv_addr_v5",
+    "signature": "(addr, orgcode, site_id)",
+    "doc": "自定义服务地址V5版"
+  },
+  {
+    "name": "set_token",
+    "signature": "(token)",
+    "doc": "设置用户的token, 用于身份认证"
+  },
+  {
+    "name": "stk_abnor_change_detail",
+    "signature": "(symbols=None, change_types=None, trade_date=None, fields=None, df=False)",
+    "doc": "查询龙虎榜营业部数据"
+  },
+  {
+    "name": "stk_abnor_change_stocks",
+    "signature": "(symbols=None, change_types=None, trade_date=None, fields=None, df=False)",
+    "doc": "查询龙虎榜股票数据"
+  },
+  {
+    "name": "stk_active_stock_top10_shszhk_info",
+    "signature": "(types=None, trade_date=None, df=False)",
+    "doc": "查询沪深港通十大活跃成交股数据"
+  },
+  {
+    "name": "stk_get_adj_factor",
+    "signature": "(symbol, start_date='', end_date='', base_date='')",
+    "doc": "查询股票的复权因子"
+  },
+  {
+    "name": "stk_get_daily_basic",
+    "signature": "(symbol, fields, start_date=None, end_date=None, df=False)",
+    "doc": "查询基础指标每日数据"
+  },
+  {
+    "name": "stk_get_daily_basic_pt",
+    "signature": "(symbols, fields, trade_date=None, df=False)",
+    "doc": "查询基础指标单日截面数据"
+  },
+  {
+    "name": "stk_get_daily_mktvalue",
+    "signature": "(symbol, fields, start_date=None, end_date=None, df=False)",
+    "doc": "查询市值指标每日数据"
+  },
+  {
+    "name": "stk_get_daily_mktvalue_pt",
+    "signature": "(symbols, fields, trade_date=None, df=False)",
+    "doc": "查询基础指标单日截面数据"
+  },
+  {
+    "name": "stk_get_daily_valuation",
+    "signature": "(symbol, fields, start_date=None, end_date=None, df=False)",
+    "doc": "查询估值指标每日数据"
+  },
+  {
+    "name": "stk_get_daily_valuation_pt",
+    "signature": "(symbols, fields, trade_date=None, df=False)",
+    "doc": "查询估值指标单日截面数据"
+  },
+  {
+    "name": "stk_get_dividend",
+    "signature": "(symbol, start_date, end_date)",
+    "doc": "查询股票分红送股信息"
+  },
+  {
+    "name": "stk_get_finance_audit",
+    "signature": "(symbols, date=None, rpt_date=None, df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "stk_get_finance_deriv",
+    "signature": "(symbol, fields, rpt_type=None, data_type=None, start_date=None, end_date=None, df=False)",
+    "doc": "查询财务衍生指标数据"
+  },
+  {
+    "name": "stk_get_finance_deriv_pt",
+    "signature": "(symbols, fields, rpt_type=None, data_type=None, date=None, df=False)",
+    "doc": "查询财务衍生指标截面数据"
+  },
+  {
+    "name": "stk_get_finance_forecast",
+    "signature": "(symbols, rpt_type=None, date=None, df=False)",
+    "doc": "无文档"
+  },
+  {
+    "name": "stk_get_finance_prime",
+    "signature": "(symbol, fields, rpt_type=None, data_type=None, start_date=None, end_date=None, df=False)",
+    "doc": "查询财务主要指标数据"
+  },
+  {
+    "name": "stk_get_finance_prime_pt",
+    "signature": "(symbols, fields, rpt_type=None, data_type=None, date=None, df=False)",
+    "doc": "查询财务主要指标截面数据"
+  },
+  {
+    "name": "stk_get_fundamentals_balance",
+    "signature": "(symbol, fields, rpt_type=None, data_type=None, start_date=None, end_date=None, df=False)",
+    "doc": "查询资产负债表数据"
+  },
+  {
+    "name": "stk_get_fundamentals_balance_pt",
+    "signature": "(symbols, fields, rpt_type=None, data_type=None, date=None, df=False)",
+    "doc": "查询资产负债表截面数据"
+  },
+  {
+    "name": "stk_get_fundamentals_cashflow",
+    "signature": "(symbol, fields, rpt_type=None, data_type=None, start_date=None, end_date=None, df=False)",
+    "doc": "查询现金流量表数据"
+  },
+  {
+    "name": "stk_get_fundamentals_cashflow_pt",
+    "signature": "(symbols, fields, rpt_type=None, data_type=None, date=None, df=False)",
+    "doc": "查询现金流量表截面数据"
+  },
+  {
+    "name": "stk_get_fundamentals_income",
+    "signature": "(symbol, fields, rpt_type=None, data_type=None, start_date=None, end_date=None, df=False)",
+    "doc": "查询利润表数据"
+  },
+  {
+    "name": "stk_get_fundamentals_income_pt",
+    "signature": "(symbols, fields, rpt_type=None, data_type=None, date=None, df=False)",
+    "doc": "查询利润表截面数据"
+  },
+  {
+    "name": "stk_get_index_constituents",
+    "signature": "(index, trade_date=None)",
+    "doc": "查询指数最新成分股"
+  },
+  {
+    "name": "stk_get_index_history_constituents",
+    "signature": "(index, start_date='', end_date='')",
+    "doc": "查询指数历史成分股"
+  },
+  {
+    "name": "stk_get_industry_category",
+    "signature": "(source='zjh2012', level=1)",
+    "doc": "查询行业分类\n\n* source: 行业来源, 默认值 'zjh2012'\n* level: 行业分级, 默认值 1, (1:一级行业, 2:二级行业, 3:三级行业)"
+  },
+  {
+    "name": "stk_get_industry_constituents",
+    "signature": "(industry_code, date='')",
+    "doc": "查询行业成分股"
+  },
+  {
+    "name": "stk_get_money_flow",
+    "signature": "(symbols, trade_date=None)",
+    "doc": "无文档"
+  },
+  {
+    "name": "stk_get_ration",
+    "signature": "(symbol, start_date, end_date)",
+    "doc": "查询股票配股信息"
+  },
+  {
+    "name": "stk_get_sector_category",
+    "signature": "(sector_type)",
+    "doc": "查询板块分类"
+  },
+  {
+    "name": "stk_get_sector_constituents",
+    "signature": "(sector_code)",
+    "doc": "查询板块成分股"
+  },
+  {
+    "name": "stk_get_share_change",
+    "signature": "(symbol, start_date='', end_date='')",
+    "doc": "查询股本变动"
+  },
+  {
+    "name": "stk_get_shareholder_num",
+    "signature": "(symbol, start_date='', end_date='')",
+    "doc": "查询股东户数"
+  },
+  {
+    "name": "stk_get_symbol_industry",
+    "signature": "(symbols, source='zjh2012', level=1, date='')",
+    "doc": "查询股票的所属行业\n\n证监会行业分类2012没有三级行业, 若输入source='zjh2012', level=3则参数无效, 返回空"
+  },
+  {
+    "name": "stk_get_symbol_sector",
+    "signature": "(symbols, sector_type)",
+    "doc": "查询股票的所属板块"
+  },
+  {
+    "name": "stk_get_top_shareholder",
+    "signature": "(symbol, start_date='', end_date='', tradable_holder=False)",
+    "doc": "查询十大股东"
+  },
+  {
+    "name": "stk_hk_inst_holding_detail_info",
+    "signature": "(symbols=None, trade_date=None, df=False)",
+    "doc": "查询沪深港通标的港股机构持股明细数据"
+  },
+  {
+    "name": "stk_hk_inst_holding_info",
+    "signature": "(symbols=None, trade_date=None, df=False)",
+    "doc": "查询沪深港通标的港股机构持股数据"
+  },
+  {
+    "name": "stk_quota_shszhk_infos",
+    "signature": "(types=None, start_date=None, end_date=None, count=None, df=False)",
+    "doc": "查询沪深港通额度数据"
+  },
+  {
+    "name": "stop",
+    "signature": "()",
+    "doc": "停止策略的运行,用exit(2)退出"
+  },
+  {
+    "name": "subscribe",
+    "signature": "(symbols, frequency=None, count=1, wait_group=False, wait_group_timeout='10s', unsubscribe_previous=False, fields=None, format='df')",
+    "doc": "订阅行情, 可以指定symbol,  数据滑窗大小, 以及是否需要等待全部代码的数据到齐再触发事件。\nwait_group: 是否等待全部相同频度订阅的symbol到齐再触发on_bar事件。\n一个 frequency, 只能有一个 wait_group_timeout 也就是说如果后面调用该函数时, 相同的frequency, 但是 wait_group_timeout 不同,\n则 wait_g..."
+  },
+  {
+    "name": "timer",
+    "signature": "(timer_func, period, start_delay)",
+    "doc": "定时器设置 (只在实时模式生效, 回测模式不起作用!)\n\nparams:\n\n     timer_func:      在timer设置的时间到达时触发的事件函数\n\n     period:          定时事件间隔秒数(毫秒), 设定每隔多少秒触发一次定时器, 范围在[1,43200]\n\n     start_delay:     等待秒数(毫秒), 设定多少秒后启动定时器, 范围在[0,..."
+  },
+  {
+    "name": "timer_stop",
+    "signature": "(timer_id)",
+    "doc": "定时器停止 \n\nparams:\n\n     timer_id:        要停止的定时器id\nreturn: \n\n     is_stop:         是否成功停止, True or False"
+  },
+  {
+    "name": "universe_delete",
+    "signature": "(universe_name)",
+    "doc": "删除标的池"
+  },
+  {
+    "name": "universe_get_names",
+    "signature": "()",
+    "doc": "获取全部标的池名称"
+  },
+  {
+    "name": "universe_get_symbols",
+    "signature": "(universe_name)",
+    "doc": "获取标的池成分"
+  },
+  {
+    "name": "universe_set",
+    "signature": "(universe_name, universe_symbols=None)",
+    "doc": "设置标的池"
+  },
+  {
+    "name": "unsubscribe",
+    "signature": "(symbols, frequency='1d')",
+    "doc": "unsubscribe - 取消行情订阅\n\n取消行情订阅, 默认取消所有已订阅行情"
+  }
+]
