@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db  # 使用逻辑卷而非本地目录
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: admin        # mongo-express 网页登录用户名
+      ME_CONFIG_BASICAUTH_PASSWORD: admin   # mongo-express 网页登录密码
+      ME_CONFIG_MONGODB_URL: "mongodb://admin:password@mongo:27017/newsnow?authSource=admin"
+    depends_on:
+      - mongodb
+
+# 定义逻辑卷
+volumes:
+  mongodb_data:

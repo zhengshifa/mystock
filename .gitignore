@@ -13,3 +13,8 @@ __pycache__/
 */.venv/
 */*/.venv/
 */*/*/.venv/
+
+logs/
+*/logs/
+
+*/uv.lock
