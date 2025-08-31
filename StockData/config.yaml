@@ -1,0 +1,26 @@
+# 掘金量化配置
+gm:
+  token: "d5791ecb0f33260e9fd719227c36f5c28b42e11c"
+  server_addr: "127.0.0.1:7001"
+  mode: "MODE_BACKTEST"  # MODE_BACKTEST, MODE_LIVE, MODE_UNKNOWN
+
+# 日志配置
+log:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_path: "./logs/stockdata.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+  console_output: true
+
+# 调度器配置
+scheduler:
+  max_workers: 4
+  thread_name_prefix: "StockData"
+  enable_monitoring: true
+  heartbeat_interval: 30  # 秒
+
+# 应用配置
+debug: false
+data_dir: "./data"
+cache_dir: "./cache"
