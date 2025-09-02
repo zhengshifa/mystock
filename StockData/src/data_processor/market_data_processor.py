@@ -35,9 +35,9 @@ class MarketDataProcessor(BaseDataProcessor):
         super().__init__(gm_client, repository_manager, config)
         
         # 获取相关仓库
-        self.realtime_quote_repo = repository_manager.get_repository(RealtimeQuoteRepository)
-        self.tick_data_repo = repository_manager.get_repository(TickDataRepository)
-        self.bar_data_repo = repository_manager.get_repository(BarDataRepository)
+        self.realtime_quote_repo = repository_manager.get_repository(DataType.REALTIME_QUOTE)
+        self.tick_data_repo = repository_manager.get_repository(DataType.TICK_DATA)
+        self.bar_data_repo = repository_manager.get_repository(DataType.BAR_DATA)
         
         # 处理器特定配置
         self.symbols = config.get('symbols', [])  # 要处理的股票代码列表
@@ -78,7 +78,7 @@ class MarketDataProcessor(BaseDataProcessor):
             logger.info(f"获取 {len(symbols)} 只股票的实时行情")
             
             # 调用掘金API获取实时行情
-            quotes = await self.gm_client.get_current_quotes(symbols=symbols)
+            quotes = await self.gm_client.get_current_quotes(symbols)
             
             if quotes:
                 logger.info(f"获取到 {len(quotes)} 条实时行情数据")
@@ -116,11 +116,9 @@ class MarketDataProcessor(BaseDataProcessor):
             # 分批获取，避免单次请求过多数据
             for symbol in symbols:
                 try:
-                    ticks = await self.gm_client.get_ticks(
-                        symbol=symbol,
-                        start_time=start_time,
-                        end_time=end_time
-                    )
+                    # 暂时跳过Tick数据，因为GMConnectionManager没有这个方法
+                    logger.warning(f"GMConnectionManager暂不支持Tick数据获取，跳过 {symbol}")
+                    ticks = []
                     
                     if ticks:
                         all_ticks.extend(ticks)
@@ -205,10 +203,10 @@ class MarketDataProcessor(BaseDataProcessor):
             # 判断数据类型并分别处理
             first_item = raw_data[0]
             
-            if 'last_price' in first_item and 'volume' in first_item:
-                # 实时行情数据
+            if 'last_price' in first_item and 'quote_time' in first_item:
+                # 实时行情数据（原始格式）
                 return await self._process_realtime_quotes(raw_data)
-            elif 'tick_time' in first_item or 'price' in first_item:
+            elif 'tick_time' in first_item and 'price' in first_item:
                 # Tick数据
                 return await self._process_tick_data(raw_data)
             elif 'open' in first_item and 'high' in first_item and 'low' in first_item and 'close' in first_item:
@@ -232,29 +230,28 @@ class MarketDataProcessor(BaseDataProcessor):
                     # 数据清洗和转换
                     processed_item = {
                         'symbol': self._clean_string_data(item.get('symbol')),
-                        'last_price': self._clean_numeric_data(item.get('last_price')),
-                        'open_price': self._clean_numeric_data(item.get('open')),
-                        'high_price': self._clean_numeric_data(item.get('high')),
-                        'low_price': self._clean_numeric_data(item.get('low')),
+                        'price': self._clean_numeric_data(item.get('last_price')),  # 映射到price字段
+                        'open': self._clean_numeric_data(item.get('open')),  # 映射到open字段
+                        'high': self._clean_numeric_data(item.get('high')),  # 映射到high字段
+                        'low': self._clean_numeric_data(item.get('low')),  # 映射到low字段
                         'pre_close': self._clean_numeric_data(item.get('pre_close')),
                         'volume': self._clean_numeric_data(item.get('volume')),
                         'amount': self._clean_numeric_data(item.get('amount')),
                         'turnover_rate': self._clean_numeric_data(item.get('turnover_rate')),
                         'pe_ratio': self._clean_numeric_data(item.get('pe_ratio')),
                         'pb_ratio': self._clean_numeric_data(item.get('pb_ratio')),
-                        'market_cap': self._clean_numeric_data(item.get('market_cap')),
-                        'bid_price_1': self._clean_numeric_data(item.get('bid_price_1')),
-                        'bid_volume_1': self._clean_numeric_data(item.get('bid_volume_1')),
-                        'ask_price_1': self._clean_numeric_data(item.get('ask_price_1')),
-                        'ask_volume_1': self._clean_numeric_data(item.get('ask_volume_1')),
-                        'quote_time': self._format_datetime(item.get('quote_time', datetime.now()), '%Y-%m-%d %H:%M:%S'),
+                        'bid1': self._clean_numeric_data(item.get('bid_price_1')),  # 映射到bid1字段
+                        'bid1_volume': self._clean_numeric_data(item.get('bid_volume_1')),  # 映射到bid1_volume字段
+                        'ask1': self._clean_numeric_data(item.get('ask_price_1')),  # 映射到ask1字段
+                        'ask1_volume': self._clean_numeric_data(item.get('ask_volume_1')),  # 映射到ask1_volume字段
+                        'timestamp': self._format_datetime(item.get('quote_time', datetime.now()), '%Y-%m-%d %H:%M:%S'),  # 映射到timestamp字段
                         'created_at': datetime.now(),
                         'updated_at': datetime.now()
                     }
                     
                     # 计算涨跌幅
-                    if processed_item['last_price'] and processed_item['pre_close'] and processed_item['pre_close'] > 0:
-                        change = processed_item['last_price'] - processed_item['pre_close']
+                    if processed_item['price'] and processed_item['pre_close'] and processed_item['pre_close'] > 0:
+                        change = processed_item['price'] - processed_item['pre_close']
                         change_pct = (change / processed_item['pre_close']) * 100
                         processed_item['change'] = round(change, 2)
                         processed_item['change_pct'] = round(change_pct, 2)
@@ -263,7 +260,7 @@ class MarketDataProcessor(BaseDataProcessor):
                         processed_item['change_pct'] = None
                     
                     # 验证必要字段
-                    if processed_item['symbol'] and processed_item['last_price'] is not None:
+                    if processed_item['symbol'] and processed_item['price'] is not None:
                         processed_data.append(processed_item)
                     else:
                         logger.warning(f"实时行情数据缺少必要字段: {item}")
@@ -330,11 +327,11 @@ class MarketDataProcessor(BaseDataProcessor):
                     processed_item = {
                         'symbol': self._clean_string_data(item.get('symbol')),
                         'period': self._clean_string_data(item.get('period', '1d')),
-                        'bar_time': self._format_datetime(item.get('eob'), '%Y-%m-%d %H:%M:%S'),
-                        'open_price': self._clean_numeric_data(item.get('open')),
-                        'high_price': self._clean_numeric_data(item.get('high')),
-                        'low_price': self._clean_numeric_data(item.get('low')),
-                        'close_price': self._clean_numeric_data(item.get('close')),
+                        'timestamp': self._format_datetime(item.get('eob'), '%Y-%m-%d %H:%M:%S'),
+                        'open': self._clean_numeric_data(item.get('open')),
+                        'high': self._clean_numeric_data(item.get('high')),
+                        'low': self._clean_numeric_data(item.get('low')),
+                        'close': self._clean_numeric_data(item.get('close')),
                         'volume': self._clean_numeric_data(item.get('volume')),
                         'amount': self._clean_numeric_data(item.get('amount')),
                         'pre_close': self._clean_numeric_data(item.get('pre_close')),
@@ -343,18 +340,18 @@ class MarketDataProcessor(BaseDataProcessor):
                     }
                     
                     # 计算涨跌幅
-                    if processed_item['close_price'] and processed_item['pre_close'] and processed_item['pre_close'] > 0:
-                        change = processed_item['close_price'] - processed_item['pre_close']
+                    if processed_item['close'] and processed_item['pre_close'] and processed_item['pre_close'] > 0:
+                        change = processed_item['close'] - processed_item['pre_close']
                         change_pct = (change / processed_item['pre_close']) * 100
                         processed_item['change'] = round(change, 2)
-                        processed_item['change_pct'] = round(change_pct, 2)
+                        processed_item['pct_change'] = round(change_pct, 2)
                     else:
                         processed_item['change'] = None
-                        processed_item['change_pct'] = None
+                        processed_item['pct_change'] = None
                     
                     # 验证必要字段
-                    if (processed_item['symbol'] and processed_item['bar_time'] and 
-                        processed_item['open_price'] is not None and processed_item['close_price'] is not None):
+                    if (processed_item['symbol'] and processed_item['timestamp'] and 
+                        processed_item['open'] is not None and processed_item['close'] is not None):
                         processed_data.append(processed_item)
                     else:
                         logger.warning(f"K线数据缺少必要字段: {item}")
@@ -379,13 +376,13 @@ class MarketDataProcessor(BaseDataProcessor):
             # 判断数据类型并分别保存
             first_item = processed_data[0]
             
-            if 'quote_time' in first_item:
-                # 实时行情数据
+            if 'timestamp' in first_item and 'price' in first_item:
+                # 实时行情数据（处理后格式）
                 return await self._save_realtime_quotes(processed_data)
             elif 'tick_time' in first_item:
                 # Tick数据
                 return await self._save_tick_data(processed_data)
-            elif 'bar_time' in first_item and 'period' in first_item:
+            elif 'timestamp' in first_item and 'period' in first_item:
                 # K线数据
                 return await self._save_bar_data(processed_data)
             else:
@@ -408,14 +405,12 @@ class MarketDataProcessor(BaseDataProcessor):
                 
                 for item in batch:
                     try:
-                        # 创建RealtimeQuote模型实例
-                        quote = RealtimeQuote(**item)
+                        # 创建RealtimeQuote模型实例，移除BaseModel字段
+                        quote_data = {k: v for k, v in item.items() if k not in ['created_at', 'updated_at']}
+                        quote = RealtimeQuote(**quote_data)
                         
                         # 实时行情通常是更新操作
-                        result = await self.realtime_quote_repo.save_or_update(
-                            quote,
-                            filter_dict={'symbol': item['symbol']}
-                        )
+                        result = await self.realtime_quote_repo.save(quote)
                         
                         if result:
                             success_count += 1
@@ -450,8 +445,9 @@ class MarketDataProcessor(BaseDataProcessor):
                 
                 for item in batch:
                     try:
-                        # 创建TickData模型实例
-                        tick = TickData(**item)
+                        # 创建TickData模型实例，移除BaseModel字段
+                        tick_data = {k: v for k, v in item.items() if k not in ['created_at', 'updated_at']}
+                        tick = TickData(**tick_data)
                         
                         # Tick数据通常是插入操作，避免重复
                         existing = await self.tick_data_repo.find_one({
@@ -497,18 +493,12 @@ class MarketDataProcessor(BaseDataProcessor):
                 
                 for item in batch:
                     try:
-                        # 创建BarData模型实例
-                        bar = BarData(**item)
+                        # 创建BarData模型实例，移除BaseModel字段
+                        bar_data = {k: v for k, v in item.items() if k not in ['created_at', 'updated_at']}
+                        bar = BarData(**bar_data)
                         
                         # K线数据通常是更新或插入操作
-                        result = await self.bar_data_repo.save_or_update(
-                            bar,
-                            filter_dict={
-                                'symbol': item['symbol'],
-                                'period': item['period'],
-                                'bar_time': item['bar_time']
-                            }
-                        )
+                        result = await self.bar_data_repo.save(bar)
                         
                         if result:
                             success_count += 1
@@ -516,7 +506,7 @@ class MarketDataProcessor(BaseDataProcessor):
                             error_count += 1
                             
                     except Exception as e:
-                        logger.warning(f"保存K线数据失败: {item.get('symbol')} {item.get('bar_time')}, 错误: {e}")
+                        logger.warning(f"保存K线数据失败: {item.get('symbol')} {item.get('timestamp')}, 错误: {e}")
                         error_count += 1
                         continue
                 
@@ -535,18 +525,18 @@ class MarketDataProcessor(BaseDataProcessor):
         """验证数据项"""
         try:
             # 实时行情验证
-            if 'quote_time' in item:
-                return bool(item.get('symbol') and item.get('last_price') is not None)
+            if 'price' in item and 'timestamp' in item:
+                return bool(item.get('symbol') and item.get('price') is not None and item.get('timestamp'))
             
             # Tick数据验证
             elif 'tick_time' in item:
                 return bool(item.get('symbol') and item.get('tick_time') and item.get('price') is not None)
             
             # K线数据验证
-            elif 'bar_time' in item:
+            elif 'timestamp' in item and 'open' in item and 'close' in item:
                 return bool(
-                    item.get('symbol') and item.get('bar_time') and 
-                    item.get('open_price') is not None and item.get('close_price') is not None
+                    item.get('symbol') and item.get('timestamp') and 
+                    item.get('open') is not None and item.get('close') is not None
                 )
             
             return False

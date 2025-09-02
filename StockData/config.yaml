@@ -30,16 +30,24 @@ mongodb:
 
 # 数据同步配置
 sync:
-  # 实时数据同步间隔(秒)
-  realtime_interval: 30
+  # 实时数据同步配置
+  realtime_sync:
+    enabled: true
+    interval: 30  # 同步间隔(秒)
+    symbols: ["000001.SZ", "600111.SH"]  # 要同步的股票代码
+    batch_size: 100
   # 历史数据同步配置
-  history:
-    # 批量大小
+  historical_sync:
+    enabled: true
     batch_size: 1000
-    # 每批次间隔(秒)
     batch_interval: 1
-    # 最大重试次数
     max_retries: 3
+    start_date: "2025-08-21"  # 历史数据开始日期
+  # 增量数据同步配置
+  incremental_sync:
+    enabled: true
+    check_interval: 3600  # 检查间隔(秒)
+    lookback_days: 7  # 回看天数
   # 数据保留天数
   data_retention_days: 365
 

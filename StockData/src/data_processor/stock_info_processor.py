@@ -35,8 +35,8 @@ class StockInfoProcessor(BaseDataProcessor):
         super().__init__(gm_client, repository_manager, config)
         
         # 获取相关仓库
-        self.stock_info_repo = repository_manager.get_repository(StockInfoRepository)
-        self.trading_calendar_repo = repository_manager.get_repository(TradingCalendarRepository)
+        self.stock_info_repo = repository_manager.get_repository(DataType.STOCK_INFO)
+        self.trading_calendar_repo = repository_manager.get_repository(DataType.TRADING_CALENDAR)
         
         # 处理器特定配置
         self.exchanges = config.get('exchanges', ['SZSE', 'SHSE'])  # 默认处理深交所和上交所
@@ -257,17 +257,35 @@ class StockInfoProcessor(BaseDataProcessor):
                         # 创建StockInfo模型实例
                         stock_info = StockInfo(**item)
                         
+                        # 将StockInfo对象转换为字典，处理枚举类型
+                        stock_info_dict = {
+                            'symbol': stock_info.symbol,
+                            'sec_name': stock_info.sec_name,
+                            'exchange': stock_info.exchange.value if hasattr(stock_info.exchange, 'value') else str(stock_info.exchange),
+                            'sec_type': stock_info.sec_type.value if hasattr(stock_info.sec_type, 'value') else str(stock_info.sec_type),
+                            'list_date': stock_info.list_date,
+                            'delist_date': stock_info.delist_date,
+                            'is_active': stock_info.is_active,
+                            'industry': stock_info.industry,
+                            'sector': stock_info.sector,
+                            'market_cap': stock_info.market_cap,
+                            'total_shares': stock_info.total_shares,
+                            'float_shares': stock_info.float_shares,
+                            'created_at': stock_info.created_at,
+                            'updated_at': stock_info.updated_at
+                        }
+                        
                         if self.update_existing:
                             # 更新或插入
                             result = await self.stock_info_repo.save_or_update(
-                                stock_info,
+                                stock_info_dict,
                                 filter_dict={'symbol': item['symbol']}
                             )
                         else:
                             # 仅插入新数据
                             existing = await self.stock_info_repo.find_one({'symbol': item['symbol']})
                             if not existing:
-                                result = await self.stock_info_repo.save(stock_info)
+                                result = await self.stock_info_repo.save(stock_info_dict)
                             else:
                                 result = True  # 跳过已存在的数据
                         

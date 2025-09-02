@@ -17,7 +17,7 @@
 
 from typing import Dict, Any, Optional, List
 from datetime import datetime
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from enum import Enum
 
 
@@ -28,10 +28,12 @@ class DataType(Enum):
     REALTIME_QUOTE = "realtime_quote"
     TICK_DATA = "tick_data"
     BAR_DATA = "bar_data"
+    MARKET_DATA = "market_data"  # 市场数据（包含实时行情、K线等）
     FINANCIAL_DATA = "financial_data"
     DIVIDEND_DATA = "dividend_data"
     SHARE_CHANGE_DATA = "share_change_data"
     INDEX_CONSTITUENT = "index_constituent"
+    OTHER_DATA = "other_data"  # 其他数据
 
 
 class Exchange(Enum):
@@ -59,19 +61,21 @@ class FinancialDataType(Enum):
     FINANCIAL_INDICATOR = "financial_indicator" # 财务指标
 
 
-@dataclass
 class BaseModel:
     """基础数据模型"""
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
+    
+    def __init__(self, created_at: Optional[datetime] = None, updated_at: Optional[datetime] = None):
+        self.created_at = created_at or datetime.now()
+        self.updated_at = updated_at or datetime.now()
     
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
-        data = asdict(self)
-        # 处理datetime对象
-        for key, value in data.items():
+        data = {}
+        for key, value in self.__dict__.items():
             if isinstance(value, datetime):
                 data[key] = value.isoformat()
+            else:
+                data[key] = value
         return data
     
     @classmethod
@@ -101,91 +105,103 @@ class StockInfo(BaseModel):
     market_cap: Optional[float] = None     # 市值
     total_shares: Optional[float] = None   # 总股本
     float_shares: Optional[float] = None   # 流通股本
+    created_at: Optional[datetime] = None  # 创建时间
+    updated_at: Optional[datetime] = None  # 更新时间
     
     def __post_init__(self):
         if self.created_at is None:
             self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        if self.updated_at is None:
+            self.updated_at = datetime.now()
 
 
 @dataclass
 class TradingCalendar(BaseModel):
     """交易日历模型"""
-    date: str                      # 日期
+    trade_date: str                # 交易日日期
     exchange: str                  # 交易所
     is_trading_day: bool           # 是否交易日
     pre_trade_date: Optional[str] = None   # 前一交易日
     next_trade_date: Optional[str] = None  # 下一交易日
+    created_at: Optional[datetime] = None  # 创建时间
+    updated_at: Optional[datetime] = None  # 更新时间
     
     def __post_init__(self):
         if self.created_at is None:
             self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        if self.updated_at is None:
+            self.updated_at = datetime.now()
 
 
-@dataclass
 class RealtimeQuote(BaseModel):
     """实时行情模型"""
-    symbol: str                    # 股票代码
-    timestamp: str                 # 时间戳
-    price: float                   # 最新价
-    open: float                    # 开盘价
-    high: float                    # 最高价
-    low: float                     # 最低价
-    pre_close: float               # 昨收价
-    volume: int                    # 成交量
-    amount: float                  # 成交额
-    turnover_rate: Optional[float] = None  # 换手率
-    pe_ratio: Optional[float] = None       # 市盈率
-    pb_ratio: Optional[float] = None       # 市净率
-    bid1: Optional[float] = None           # 买一价
-    bid1_volume: Optional[int] = None      # 买一量
-    ask1: Optional[float] = None           # 卖一价
-    ask1_volume: Optional[int] = None      # 卖一量
     
-    def __post_init__(self):
-        if self.created_at is None:
-            self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    def __init__(self, symbol: str, timestamp: str, price: float, open: float, 
+                 high: float, low: float, pre_close: float, volume: int, amount: float,
+                 turnover_rate: Optional[float] = None, pe_ratio: Optional[float] = None,
+                 pb_ratio: Optional[float] = None, bid1: Optional[float] = None,
+                 bid1_volume: Optional[int] = None, ask1: Optional[float] = None,
+                 ask1_volume: Optional[int] = None, change: Optional[float] = None,
+                 change_pct: Optional[float] = None, created_at: Optional[datetime] = None,
+                 updated_at: Optional[datetime] = None):
+        super().__init__(created_at, updated_at)
+        self.symbol = symbol
+        self.timestamp = timestamp
+        self.price = price
+        self.open = open
+        self.high = high
+        self.low = low
+        self.pre_close = pre_close
+        self.volume = volume
+        self.amount = amount
+        self.turnover_rate = turnover_rate
+        self.pe_ratio = pe_ratio
+        self.pb_ratio = pb_ratio
+        self.bid1 = bid1
+        self.bid1_volume = bid1_volume
+        self.ask1 = ask1
+        self.ask1_volume = ask1_volume
+        self.change = change
+        self.change_pct = change_pct
 
 
-@dataclass
 class TickData(BaseModel):
     """逐笔数据模型"""
-    symbol: str                    # 股票代码
-    timestamp: str                 # 时间戳
-    price: float                   # 成交价
-    volume: int                    # 成交量
-    amount: float                  # 成交额
-    side: Optional[str] = None             # 买卖方向
-    order_kind: Optional[str] = None       # 订单类型
     
-    def __post_init__(self):
-        if self.created_at is None:
-            self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    def __init__(self, symbol: str, timestamp: str, price: float, volume: int, 
+                 amount: float, side: Optional[str] = None, order_kind: Optional[str] = None,
+                 created_at: Optional[datetime] = None, updated_at: Optional[datetime] = None):
+        super().__init__(created_at, updated_at)
+        self.symbol = symbol
+        self.timestamp = timestamp
+        self.price = price
+        self.volume = volume
+        self.amount = amount
+        self.side = side
+        self.order_kind = order_kind
 
 
-@dataclass
 class BarData(BaseModel):
     """K线数据模型"""
-    symbol: str                    # 股票代码
-    timestamp: str                 # 时间戳
-    period: str                    # 周期(1m, 5m, 15m, 30m, 1h, 1d等)
-    open: float                    # 开盘价
-    high: float                    # 最高价
-    low: float                     # 最低价
-    close: float                   # 收盘价
-    volume: int                    # 成交量
-    amount: float                  # 成交额
-    pre_close: Optional[float] = None      # 昨收价
-    change: Optional[float] = None         # 涨跌额
-    pct_change: Optional[float] = None     # 涨跌幅
     
-    def __post_init__(self):
-        if self.created_at is None:
-            self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    def __init__(self, symbol: str, timestamp: str, period: str, open: float, 
+                 high: float, low: float, close: float, volume: int, amount: float,
+                 pre_close: Optional[float] = None, change: Optional[float] = None, 
+                 pct_change: Optional[float] = None, created_at: Optional[datetime] = None, 
+                 updated_at: Optional[datetime] = None):
+        super().__init__(created_at, updated_at)
+        self.symbol = symbol
+        self.timestamp = timestamp
+        self.period = period
+        self.open = open
+        self.high = high
+        self.low = low
+        self.close = close
+        self.volume = volume
+        self.amount = amount
+        self.pre_close = pre_close
+        self.change = change
+        self.pct_change = pct_change
 
 
 @dataclass

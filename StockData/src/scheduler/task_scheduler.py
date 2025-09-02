@@ -129,7 +129,8 @@ class ScheduledTask:
 class TaskScheduler:
     """任务调度器"""
     
-    def __init__(self, max_workers: int = 10, logger_name: str = "TaskScheduler"):
+    def __init__(self, config: Dict[str, Any], max_workers: int = 10, logger_name: str = "TaskScheduler"):
+        self.config = config
         self.max_workers = max_workers
         self.logger = get_logger(logger_name)
         
@@ -156,6 +157,36 @@ class TaskScheduler:
         }
         
         self.logger.info(f"TaskScheduler initialized with {max_workers} workers")
+    
+    async def initialize(self) -> None:
+        """初始化任务调度器"""
+        self.logger.info("任务调度器初始化中...")
+        # 这里可以添加初始化逻辑
+        self.logger.info("任务调度器初始化完成")
+    
+    def start(self) -> None:
+        """启动任务调度器"""
+        self.logger.info("启动任务调度器...")
+        if not self.is_running:
+            self.is_running = True
+            self.stop_event.clear()
+            self.scheduler_thread = threading.Thread(target=self._scheduler_loop, daemon=True)
+            self.scheduler_thread.start()
+            self.logger.info("TaskScheduler started")
+        else:
+            self.logger.warning("TaskScheduler is already running")
+    
+    def stop(self) -> None:
+        """停止任务调度器"""
+        self.logger.info("Stopping TaskScheduler...")
+        if self.is_running:
+            self.is_running = False
+            self.stop_event.set()
+            if self.scheduler_thread and self.scheduler_thread.is_alive():
+                self.scheduler_thread.join(timeout=5)
+            self.logger.info("TaskScheduler stopped")
+        else:
+            self.logger.warning("TaskScheduler is not running")
     
     def add_task(self, task: ScheduledTask) -> str:
         """添加任务"""

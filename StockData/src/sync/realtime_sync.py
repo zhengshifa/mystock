@@ -82,13 +82,17 @@ class RealtimeDataSync:
         try:
             if self.is_running:
                 logger.warning("实时同步已在运行中")
-                return
+                return True
             
             logger.info("启动实时数据同步...")
             
             # 检查处理器管理器状态
-            if not self.processor_manager.is_running:
-                raise SyncError("数据处理器管理器未运行")
+            if hasattr(self.processor_manager, 'is_running') and not self.processor_manager.is_running:
+                logger.warning("数据处理器管理器未运行，尝试等待...")
+                # 等待一段时间让处理器管理器启动
+                await asyncio.sleep(1)
+                if hasattr(self.processor_manager, 'is_running') and not self.processor_manager.is_running:
+                    raise SyncError("数据处理器管理器未运行")
             
             self.is_running = True
             self.is_paused = False
@@ -98,11 +102,12 @@ class RealtimeDataSync:
             self._sync_task = asyncio.create_task(self._sync_loop())
             
             logger.info("实时数据同步已启动")
+            return True
             
         except Exception as e:
             logger.error(f"启动实时同步失败: {e}")
             self.is_running = False
-            raise
+            return False
     
     async def stop(self):
         """停止实时同步"""

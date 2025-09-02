@@ -36,6 +36,41 @@ class GMDataFetcher:
         
         logger.info("掘金量化数据获取器初始化完成")
     
+    def _convert_symbol_format(self, symbol: str) -> str:
+        """转换股票代码格式为掘金API标准格式"""
+        try:
+            if not symbol:
+                return symbol
+            
+            # 如果已经是掘金格式，直接返回
+            if '.' in symbol and symbol.split('.')[0] in ['SZSE', 'SHSE', 'BSE']:
+                return symbol
+            
+            # 转换格式：000001.SZ -> SZSE.000001, 600000.SH -> SHSE.600000
+            if '.' in symbol:
+                code, exchange = symbol.split('.')
+                if exchange.upper() == 'SZ':
+                    return f"SZSE.{code}"
+                elif exchange.upper() == 'SH':
+                    return f"SHSE.{code}"
+                elif exchange.upper() == 'BJ':
+                    return f"BSE.{code}"
+            
+            # 如果没有交易所后缀，尝试根据代码判断
+            if symbol.startswith('000') or symbol.startswith('002') or symbol.startswith('003'):
+                return f"SZSE.{symbol}"
+            elif symbol.startswith('600') or symbol.startswith('601') or symbol.startswith('603'):
+                return f"SHSE.{symbol}"
+            elif symbol.startswith('688') or symbol.startswith('689'):
+                return f"SHSE.{symbol}"  # 科创板
+            
+            # 默认返回原格式
+            return symbol
+            
+        except Exception as e:
+            logger.warning(f"股票代码格式转换失败: {symbol}, 错误: {e}")
+            return symbol
+    
     async def initialize(self):
         """初始化数据获取器"""
         try:
@@ -122,7 +157,11 @@ class GMDataFetcher:
             
             quotes = []
             for symbol in symbols:
-                quote = gm.current(symbol)
+                # 转换股票代码格式
+                gm_symbol = self._convert_symbol_format(symbol)
+                logger.debug(f"转换股票代码: {symbol} -> {gm_symbol}")
+                
+                quote = gm.current(gm_symbol)
                 if quote:
                     quotes.append(self._format_quote_data(quote))
             
@@ -164,8 +203,12 @@ class GMDataFetcher:
         try:
             logger.debug(f"获取K线数据: {symbol} {period} {start_time} 到 {end_time}")
             
+            # 转换股票代码格式
+            gm_symbol = self._convert_symbol_format(symbol)
+            logger.debug(f"转换股票代码: {symbol} -> {gm_symbol}")
+            
             # 获取K线数据
-            bars = gm.get_bars(symbol=symbol, period=period, start_time=start_time, end_time=end_time)
+            bars = gm.get_bars(symbol=gm_symbol, period=period, start_time=start_time, end_time=end_time)
             
             result = []
             for bar in bars:

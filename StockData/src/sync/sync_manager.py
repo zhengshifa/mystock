@@ -51,16 +51,29 @@ class SyncManager:
         self.repository_manager = repository_manager
         self.config = config
         
+        # 调试日志（可选）
+        # logger.info(f"同步管理器接收到的完整配置: {config}")
+        # logger.info(f"同步管理器中的sync配置: {config.get('sync', {})}")
+        
         # 同步器配置
-        self.realtime_config = config.get('realtime_sync', {})
-        self.historical_config = config.get('historical_sync', {})
-        self.incremental_config = config.get('incremental_sync', {})
+        self.realtime_config = config.get('sync', {}).get('realtime_sync', {})
+        self.historical_config = config.get('sync', {}).get('historical_sync', {})
+        self.incremental_config = config.get('sync', {}).get('incremental_sync', {})
         
         # 创建同步器实例
         self.realtime_sync = RealtimeDataSync(processor_manager, self.realtime_config)
         self.historical_sync = HistoricalDataSync(processor_manager, self.historical_config)
+        
+        # 为增量同步器添加股票代码配置
+        incremental_config_with_symbols = self.incremental_config.copy()
+        symbols = self.realtime_config.get('symbols', [])
+        incremental_config_with_symbols['symbols'] = symbols
+        
+        # logger.info(f"同步管理器配置 - 实时同步股票代码: {symbols}")
+        # logger.info(f"同步管理器配置 - 增量同步配置: {incremental_config_with_symbols}")
+        
         self.incremental_sync = IncrementalDataSync(
-            processor_manager, repository_manager, self.incremental_config
+            processor_manager, repository_manager, incremental_config_with_symbols
         )
         
         # 管理器状态
@@ -96,6 +109,18 @@ class SyncManager:
         
         logger.info("同步管理器初始化完成")
     
+    async def start(self) -> None:
+        """启动同步管理器"""
+        logger.info("启动同步管理器...")
+        # 这里可以添加启动逻辑
+        logger.info("同步管理器已启动")
+    
+    async def stop(self) -> None:
+        """停止同步管理器"""
+        logger.info("停止同步管理器...")
+        # 这里可以添加停止逻辑
+        logger.info("同步管理器已停止")
+    
     async def initialize(self) -> bool:
         """初始化同步管理器"""
         try:
@@ -106,7 +131,8 @@ class SyncManager:
             logger.info("初始化同步管理器...")
             
             # 检查依赖
-            if not self.processor_manager.is_running:
+            # 检查数据处理器管理器状态
+            if hasattr(self.processor_manager, 'is_running') and not self.processor_manager.is_running:
                 logger.error("数据处理器管理器未运行")
                 return False
             
@@ -115,7 +141,11 @@ class SyncManager:
             
             # 根据配置自动启动同步
             if self.schedule_config.get('auto_start_realtime', True):
-                await self.start_realtime_sync()
+                # 确保数据处理器管理器已启动
+                if hasattr(self.processor_manager, 'is_running') and self.processor_manager.is_running:
+                    await self.start_realtime_sync()
+                else:
+                    logger.warning("数据处理器管理器未运行，跳过自动启动实时同步")
             
             # 启动调度任务
             await self._start_scheduled_tasks()

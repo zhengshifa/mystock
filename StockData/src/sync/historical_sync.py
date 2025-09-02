@@ -160,8 +160,13 @@ class HistoricalDataSync:
                 end_date = datetime.now().strftime('%Y-%m-%d')
             
             if start_date is None:
-                start_dt = datetime.now() - timedelta(days=self.sync_config['default_lookback_days'])
-                start_date = start_dt.strftime('%Y-%m-%d')
+                # 优先使用配置中的start_date，否则使用默认回溯天数
+                config_start_date = self.config.get('start_date')
+                if config_start_date:
+                    start_date = config_start_date
+                else:
+                    start_dt = datetime.now() - timedelta(days=self.sync_config['default_lookback_days'])
+                    start_date = start_dt.strftime('%Y-%m-%d')
             
             # 获取股票列表
             if symbols is None:

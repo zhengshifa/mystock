@@ -36,8 +36,8 @@ class OtherDataProcessor(BaseDataProcessor):
         super().__init__(gm_client, repository_manager, config)
         
         # 获取相关仓库
-        self.index_constituent_repo = repository_manager.get_repository(IndexConstituentRepository)
-        self.stock_info_repo = repository_manager.get_repository(StockInfoRepository)
+        self.index_constituent_repo = repository_manager.get_repository(DataType.INDEX_CONSTITUENT)
+        self.stock_info_repo = repository_manager.get_repository(DataType.STOCK_INFO)
         
         # 处理器特定配置
         self.index_symbols = config.get('index_symbols', [

@@ -38,6 +38,9 @@ class IncrementalDataSync:
         self.max_retries = config.get('max_retries', 3)  # 最大重试次数
         self.concurrent_limit = config.get('concurrent_limit', 10)  # 并发限制
         
+        # logger.info(f"增量同步器接收到的配置: {config}")
+        # logger.info(f"增量同步器解析的股票代码: {self.symbols}")
+        
         # 增量同步策略配置
         self.sync_strategies = config.get('sync_strategies', {
             'daily_bars': 'timestamp_based',     # 基于时间戳
@@ -224,7 +227,9 @@ class IncrementalDataSync:
                 start_time = last_sync_time
             else:
                 logger.info(f"全量同步 {data_type}")
-                start_time = self.config.get('default_start_date', '2020-01-01')
+                # 从配置中获取历史数据开始日期
+                historical_config = self.config.get('sync', {}).get('historical_sync', {})
+                start_time = historical_config.get('start_date', '2020-01-01')
             
             end_time = datetime.now().strftime('%Y-%m-%d')
             
@@ -360,10 +365,21 @@ class IncrementalDataSync:
         try:
             logger.info(f"全量刷新同步 {data_type}")
             
+            # 根据数据类型确定子类型
+            data_subtype = self._get_data_subtype(data_type)
+            
+            # 获取日期范围
+            historical_config = self.config.get('sync', {}).get('historical_sync', {})
+            start_time = historical_config.get('start_date', '2020-01-01')
+            end_time = datetime.now().strftime('%Y-%m-%d')
+            
             # 直接调用处理器进行全量同步
             success = await self.processor_manager.process_data(
                 self._get_data_type_enum(data_type),
-                symbols=symbols
+                data_subtype=data_subtype,
+                symbols=symbols,
+                start_date=start_time,
+                end_date=end_time
             )
             
             logger.info(f"全量刷新同步 {data_type} 完成: {'成功' if success else '失败'}")
@@ -409,6 +425,7 @@ class IncrementalDataSync:
             
             success = await self.processor_manager.process_data(
                 self._get_data_type_enum(data_type),
+                data_subtype=self._get_data_subtype(data_type),
                 symbols=symbols,
                 start_date=start_time,
                 end_date=end_time
@@ -428,6 +445,7 @@ class IncrementalDataSync:
             
             success = await self.processor_manager.process_data(
                 self._get_data_type_enum(data_type),
+                data_subtype=self._get_data_subtype(data_type),
                 symbols=symbols
             )
             
@@ -445,6 +463,7 @@ class IncrementalDataSync:
             
             success = await self.processor_manager.process_data(
                 self._get_data_type_enum(data_type),
+                data_subtype=self._get_data_subtype(data_type),
                 symbols=symbols
             )
             
@@ -465,6 +484,18 @@ class IncrementalDataSync:
             'dividend_data': DataType.FINANCIAL_DATA
         }
         return mapping.get(data_type, DataType.MARKET_DATA)
+    
+    def _get_data_subtype(self, data_type: str) -> str:
+        """获取数据子类型"""
+        mapping = {
+            'stock_info': 'stock_list',
+            'trading_calendar': 'trading_calendar',
+            'daily_bars': 'bar_data',
+            'realtime_quotes': 'realtime_quote',
+            'financial_data': 'financial_data',
+            'dividend_data': 'dividend_data'
+        }
+        return mapping.get(data_type, 'realtime_quote')
     
     async def _get_local_latest_timestamp(self, data_type: str, symbol: str) -> Optional[str]:
         """获取本地最新数据时间戳"""

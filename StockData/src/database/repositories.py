@@ -74,7 +74,52 @@ class StockInfoRepository(BaseRepository):
     
     async def save(self, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> bool:
         """保存股票信息"""
-        return await self.mongo_manager.save_stock_info(data)
+        return await self.mongo_manager.save_document(self.collection_name, data)
+    
+    async def save_or_update(self, data: Union[Dict[str, Any], List[Dict[str, Any]]], filter_dict: Dict[str, Any]) -> bool:
+        """保存或更新股票信息"""
+        try:
+            if isinstance(data, list):
+                # 批量处理
+                for item in data:
+                    await self.save_or_update(item, filter_dict)
+                return True
+            else:
+                # 单个处理
+                # 先尝试查找现有记录
+                existing = await self.find_one(filter_dict)
+                if existing:
+                    # 更新现有记录
+                    data['updated_at'] = datetime.now()
+                    count = await self.mongo_manager.client.update_one(
+                        self.collection_name,
+                        filter_dict,
+                        data
+                    )
+                    return count > 0
+                else:
+                    # 插入新记录
+                    return await self.save(data)
+        except Exception as e:
+            logger.error(f"保存或更新股票信息失败: {e}")
+            return False
+    
+    async def find_one(self, filter_dict: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """查找单条股票信息"""
+        try:
+            return await self.mongo_manager.find_one(self.collection_name, filter_dict)
+        except Exception as e:
+            logger.error(f"查找股票信息失败: {e}")
+            return None
+    
+    async def find_many(self, filter_dict: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """查找多条股票信息"""
+        try:
+            result = await self.mongo_manager.find_many(self.collection_name, filter_dict)
+            return result if isinstance(result, list) else []
+        except Exception as e:
+            logger.error(f"查找股票信息失败: {e}")
+            return []
     
     async def find(self, symbol: str = None, exchange: str = None, sec_type: str = None, is_active: bool = None) -> Union[Dict[str, Any], List[Dict[str, Any]], None]:
         """查找股票信息"""
@@ -130,7 +175,52 @@ class TradingCalendarRepository(BaseRepository):
     
     async def save(self, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> bool:
         """保存交易日历"""
-        return await self.mongo_manager.save_trading_calendar(data)
+        return await self.mongo_manager.save_document(self.collection_name, data)
+    
+    async def save_or_update(self, data: Union[Dict[str, Any], List[Dict[str, Any]]], filter_dict: Dict[str, Any]) -> bool:
+        """保存或更新交易日历"""
+        try:
+            if isinstance(data, list):
+                # 批量处理
+                for item in data:
+                    await self.save_or_update(item, filter_dict)
+                return True
+            else:
+                # 单个处理
+                # 先尝试查找现有记录
+                existing = await self.find_one(filter_dict)
+                if existing:
+                    # 更新现有记录
+                    data['updated_at'] = datetime.now()
+                    count = await self.mongo_manager.client.update_one(
+                        self.collection_name,
+                        filter_dict,
+                        data
+                    )
+                    return count > 0
+                else:
+                    # 插入新记录
+                    return await self.save(data)
+        except Exception as e:
+            logger.error(f"保存或更新交易日历失败: {e}")
+            return False
+    
+    async def find_one(self, filter_dict: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """查找单条交易日历"""
+        try:
+            return await self.mongo_manager.find_one(self.collection_name, filter_dict)
+        except Exception as e:
+            logger.error(f"查找交易日历失败: {e}")
+            return None
+    
+    async def find_many(self, filter_dict: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """查找多条交易日历"""
+        try:
+            result = await self.mongo_manager.find_many(self.collection_name, filter_dict)
+            return result if isinstance(result, list) else []
+        except Exception as e:
+            logger.error(f"查找交易日历失败: {e}")
+            return []
     
     async def find(self, start_date: str = None, end_date: str = None, exchange: str = 'SHSE', is_trading_day: bool = None) -> List[Dict[str, Any]]:
         """查找交易日历"""
@@ -188,7 +278,13 @@ class RealtimeQuoteRepository(BaseRepository):
     
     async def save(self, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> bool:
         """保存实时行情"""
-        return await self.mongo_manager.save_realtime_quotes(data)
+        # 将数据转换为字典格式
+        if isinstance(data, list):
+            data_dict = [item.to_dict() if hasattr(item, 'to_dict') else item for item in data]
+        else:
+            data_dict = data.to_dict() if hasattr(data, 'to_dict') else data
+        
+        return await self.mongo_manager.save_document('realtime_quotes', data_dict)
     
     async def find(self, symbols: List[str] = None, start_time: str = None, end_time: str = None, limit: int = None) -> List[Dict[str, Any]]:
         """查找实时行情"""
@@ -273,7 +369,13 @@ class BarDataRepository(BaseRepository):
     
     async def save(self, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> bool:
         """保存K线数据"""
-        return await self.mongo_manager.save_bar_data(data)
+        # 将数据转换为字典格式
+        if isinstance(data, list):
+            data_dict = [item.to_dict() if hasattr(item, 'to_dict') else item for item in data]
+        else:
+            data_dict = data.to_dict() if hasattr(data, 'to_dict') else data
+        
+        return await self.mongo_manager.save_document('bar_data', data_dict)
     
     async def find(self, symbol: str, period: str, start_time: str = None, end_time: str = None, limit: int = None) -> List[Dict[str, Any]]:
         """查找K线数据"""

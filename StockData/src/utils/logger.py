@@ -107,12 +107,12 @@ class LoggerManager:
         
         self.config = config or LogConfig()
         self.loggers = {}
-        self.log_queue = Queue(maxsize=10000) if self.config.async_logging else None
+        self.log_queue = Queue(maxsize=10000) if getattr(self.config, 'async_logging', False) else None
         self.thread_pool = ThreadPoolExecutor(max_workers=2, thread_name_prefix="Logger")
         self.async_writer_running = False
         
         # 创建日志目录
-        self.log_dir = Path(self.config.log_dir)
+        self.log_dir = Path(getattr(self.config, 'log_dir', 'logs'))
         self.log_dir.mkdir(parents=True, exist_ok=True)
         
         # 初始化结构化日志
@@ -487,11 +487,40 @@ class PerformanceLogger:
 _logger_manager = None
 
 
-def setup_logger(config: Optional[LogConfig] = None) -> LoggerManager:
-    """设置日志系统"""
+def setup_logger(config: Union[LogConfig, Dict[str, Any]]) -> Logger:
+    """
+    设置日志系统
+    
+    Args:
+        config: 日志配置
+        
+    Returns:
+        配置好的日志器
+    """
     global _logger_manager
+    
+    # 如果传入的是字典，创建一个简单的配置对象
+    if isinstance(config, dict):
+        # 创建一个简单的配置对象
+        class SimpleLogConfig:
+            def __init__(self, config_dict):
+                self.level = config_dict.get('level', 'INFO')
+                self.log_dir = config_dict.get('log_dir', 'logs')
+                self.async_logging = config_dict.get('async_logging', False)
+                self.structured_logging = config_dict.get('structured_logging', False)
+                self.console_output = config_dict.get('console_output', True)
+                self.file_output = config_dict.get('file_output', True)
+                self.max_file_size = config_dict.get('max_file_size', '10MB')
+                self.retention_days = config_dict.get('retention_days', 30)
+                self.compression = config_dict.get('compression', 'zip')
+                self.format_type = config_dict.get('format_type', 'detailed')
+                self.performance_logging = config_dict.get('performance_logging', False)
+                self.error_tracking = config_dict.get('error_tracking', True)
+        
+        config = SimpleLogConfig(config)
+    
     _logger_manager = LoggerManager(config)
-    return _logger_manager
+    return _logger_manager.get_logger("stock_data")
 
 
 def get_logger(name: str = "stock_data") -> Logger:

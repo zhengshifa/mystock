@@ -36,9 +36,9 @@ class FinancialDataProcessor(BaseDataProcessor):
         super().__init__(gm_client, repository_manager, config)
         
         # 获取相关仓库
-        self.financial_data_repo = repository_manager.get_repository(FinancialDataRepository)
-        self.dividend_data_repo = repository_manager.get_repository(DividendDataRepository)
-        self.share_change_repo = repository_manager.get_repository(ShareChangeDataRepository)
+        self.financial_data_repo = repository_manager.get_repository(DataType.FINANCIAL_DATA)
+        self.dividend_data_repo = repository_manager.get_repository(DataType.DIVIDEND_DATA)
+        self.share_change_repo = repository_manager.get_repository(DataType.SHARE_CHANGE_DATA)
         
         # 处理器特定配置
         self.symbols = config.get('symbols', [])  # 要处理的股票代码列表
@@ -81,10 +81,14 @@ class FinancialDataProcessor(BaseDataProcessor):
                 return []
             
             if not start_date or not end_date:
-                # 默认获取最近5年的数据
+                # 优先使用配置中的开始日期，否则使用默认的years_back
                 end_date = datetime.now().date()
-                start_date = end_date - timedelta(days=365 * self.years_back)
-                start_date = start_date.strftime('%Y-%m-%d')
+                config_start_date = self.config.get('sync', {}).get('historical_sync', {}).get('start_date')
+                if config_start_date:
+                    start_date = config_start_date
+                else:
+                    start_date = end_date - timedelta(days=365 * self.years_back)
+                    start_date = start_date.strftime('%Y-%m-%d')
                 end_date = end_date.strftime('%Y-%m-%d')
             
             logger.info(f"获取 {len(symbols)} 只股票的 {data_type} 数据: {start_date} 到 {end_date}")
@@ -157,10 +161,14 @@ class FinancialDataProcessor(BaseDataProcessor):
                 return []
             
             if not start_date or not end_date:
-                # 默认获取最近5年的数据
+                # 优先使用配置中的开始日期，否则使用默认的years_back
                 end_date = datetime.now().date()
-                start_date = end_date - timedelta(days=365 * self.years_back)
-                start_date = start_date.strftime('%Y-%m-%d')
+                config_start_date = self.config.get('sync', {}).get('historical_sync', {}).get('start_date')
+                if config_start_date:
+                    start_date = config_start_date
+                else:
+                    start_date = end_date - timedelta(days=365 * self.years_back)
+                    start_date = start_date.strftime('%Y-%m-%d')
                 end_date = end_date.strftime('%Y-%m-%d')
             
             logger.info(f"获取 {len(symbols)} 只股票的分红数据: {start_date} 到 {end_date}")
@@ -210,10 +218,14 @@ class FinancialDataProcessor(BaseDataProcessor):
                 return []
             
             if not start_date or not end_date:
-                # 默认获取最近5年的数据
+                # 优先使用配置中的开始日期，否则使用默认的years_back
                 end_date = datetime.now().date()
-                start_date = end_date - timedelta(days=365 * self.years_back)
-                start_date = start_date.strftime('%Y-%m-%d')
+                config_start_date = self.config.get('sync', {}).get('historical_sync', {}).get('start_date')
+                if config_start_date:
+                    start_date = config_start_date
+                else:
+                    start_date = end_date - timedelta(days=365 * self.years_back)
+                    start_date = start_date.strftime('%Y-%m-%d')
                 end_date = end_date.strftime('%Y-%m-%d')
             
             logger.info(f"获取 {len(symbols)} 只股票的股本变动数据: {start_date} 到 {end_date}")

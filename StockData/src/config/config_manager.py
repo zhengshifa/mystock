@@ -49,6 +49,10 @@ class ConfigManager:
         except Exception as e:
             raise Exception(f"配置加载失败: {e}")
     
+    def get_config(self) -> Dict[str, Any]:
+        """获取配置"""
+        return self.config
+    
     def _load_env_variables(self):
         """加载环境变量文件"""
         env_path = self._project_root / self.env_file
@@ -64,6 +68,12 @@ class ConfigManager:
         
         with open(config_path, 'r', encoding='utf-8') as f:
             self.config = yaml.safe_load(f) or {}
+        
+        # 调试日志（可选）
+        # print(f"配置文件路径: {config_path}")
+        # print(f"加载的配置: {self.config}")
+        # if 'sync' in self.config and 'realtime_sync' in self.config['sync']:
+        #     print(f"实时同步配置: {self.config['sync']['realtime_sync']}")
     
     def _override_with_env_vars(self):
         """使用环境变量覆盖配置"""

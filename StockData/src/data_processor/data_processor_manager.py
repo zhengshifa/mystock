@@ -78,6 +78,27 @@ class DataProcessorManager:
             for data_type, processor_class in self._processor_classes.items():
                 try:
                     processor_config = self.config.get('processors', {}).get(data_type.value, {})
+                    
+                    # 为不同数据处理器添加相应配置
+                    sync_config = self.config.get('sync', {})
+                    realtime_config = sync_config.get('realtime_sync', {})
+                    symbols = realtime_config.get('symbols', [])
+                    
+                    if data_type.value == 'market_data':
+                        processor_config['symbols'] = symbols
+                        processor_config['bar_periods'] = ['1m', '5m', '15m', '30m', '1h', '1d']
+                        processor_config['enable_realtime'] = True
+                        processor_config['enable_bar'] = True
+                    elif data_type.value == 'stock_info':
+                        processor_config['symbols'] = symbols
+                        processor_config['exchanges'] = ['SZSE', 'SHSE']
+                        processor_config['security_types'] = ['STOCK']
+                    elif data_type.value == 'financial_data':
+                        processor_config['symbols'] = symbols
+                        processor_config['data_types'] = ['income_statement', 'balance_sheet', 'cash_flow', 'financial_indicator']
+                    elif data_type.value == 'other_data':
+                        processor_config['index_symbols'] = ['000001.SH', '000300.SH', '000905.SH', '399001.SZ', '399006.SZ', '399005.SZ']
+                    
                     processor = processor_class(
                         self.gm_client,
                         self.repository_manager,
@@ -102,7 +123,6 @@ class DataProcessorManager:
         """关闭管理器"""
         try:
             logger.info("关闭数据处理器管理器...")
-            
             self.is_running = False
             
             # 等待所有运行中的任务完成

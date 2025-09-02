@@ -25,7 +25,9 @@ from .exceptions import (
     APIError,
     ConfigError,
     SyncError,
-    ValidationError
+    ValidationError,
+    ResourceError,
+    DateValidationError
 )
 
 from .validators import (
@@ -37,10 +39,10 @@ from .validators import (
 
 from .time_utils import (
     TimeUtils,
-    get_trading_days,
-    is_trading_day,
-    format_datetime,
-    parse_datetime
+    get_trading_day,
+    is_trading_time,
+    now,
+    utc_now
 )
 
 __all__ = [
@@ -67,8 +69,8 @@ __all__ = [
     
     # 时间工具
     'TimeUtils',
-    'get_trading_days',
-    'is_trading_day',
-    'format_datetime',
-    'parse_datetime'
+    'get_trading_day',
+    'is_trading_time',
+    'now',
+    'utc_now'
 ]
