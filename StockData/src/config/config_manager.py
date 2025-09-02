@@ -1,295 +1,179 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-配置管理工具
-提供动态调整调度配置、股票列表、交易时间等功能
+配置管理器
+
+负责加载和管理系统配置，支持:
+- YAML配置文件
+- 环境变量覆盖
+- 配置验证
+- 动态配置更新
 """
-import json
-from typing import List, Dict, Any, Optional
-from src.config.scheduler_config import get_scheduler_config
-from src.config.yaml_loader import get_yaml_config_loader
-from src.utils.logger import get_logger
+
+import os
+import yaml
+from pathlib import Path
+from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+from .config_validator import ConfigValidator
 
 
 class ConfigManager:
     """配置管理器"""
     
-    def __init__(self):
-        """初始化配置管理器"""
-        self.logger = get_logger("ConfigManager")
-        self.scheduler_config = get_scheduler_config()
-        self.yaml_loader = get_yaml_config_loader()
+    def __init__(self, config_file: Optional[str] = None, env_file: Optional[str] = None):
+        self.config_file = config_file or "config.yaml"
+        self.env_file = env_file or ".env"
+        self.config: Dict[str, Any] = {}
+        self.validator = ConfigValidator()
+        self._project_root = Path(__file__).parent.parent.parent
     
-    def get_current_config(self) -> Dict[str, Any]:
-        """获取当前配置的完整信息"""
+    async def load_config(self) -> Dict[str, Any]:
+        """加载配置"""
         try:
-            config = self.scheduler_config.get_config()
-            return config.dict()
-        except Exception as e:
-            self.logger.error(f"获取当前配置失败: {e}")
-            return {}
-    
-    def update_stock_symbols(self, market: str, symbols: List[str]) -> bool:
-        """更新股票代码列表"""
-        try:
-            if self.scheduler_config.update_stock_symbols(market, symbols):
-                # 保存到YAML文件
-                if self.scheduler_config.save_config():
-                    self.logger.info(f"成功更新{market}市场股票代码列表: {len(symbols)}只股票")
-                    return True
-                else:
-                    self.logger.error("保存配置到文件失败")
-                    return False
-            else:
-                self.logger.error(f"更新{market}市场股票代码列表失败")
-                return False
-        except Exception as e:
-            self.logger.error(f"更新股票代码列表异常: {e}")
-            return False
-    
-    def add_stock_symbol(self, market: str, symbol: str) -> bool:
-        """添加单个股票代码"""
-        try:
-            current_symbols = self.scheduler_config.get_stock_symbols(market)
-            if symbol not in current_symbols:
-                current_symbols.append(symbol)
-                return self.update_stock_symbols(market, current_symbols)
-            else:
-                self.logger.warning(f"股票代码 {symbol} 已存在于{market}市场")
-                return True
-        except Exception as e:
-            self.logger.error(f"添加股票代码异常: {e}")
-            return False
-    
-    def remove_stock_symbol(self, market: str, symbol: str) -> bool:
-        """移除单个股票代码"""
-        try:
-            current_symbols = self.scheduler_config.get_stock_symbols(market)
-            if symbol in current_symbols:
-                current_symbols.remove(symbol)
-                return self.update_stock_symbols(market, current_symbols)
-            else:
-                self.logger.warning(f"股票代码 {symbol} 不存在于{market}市场")
-                return True
-        except Exception as e:
-            self.logger.error(f"移除股票代码异常: {e}")
-            return False
-    
-    def update_trading_hours(self, trading_hours: Dict[str, List[str]]) -> bool:
-        """更新交易时间配置"""
-        try:
-            if self.scheduler_config.update_trading_hours(trading_hours):
-                # 保存到YAML文件
-                if self.scheduler_config.save_config():
-                    self.logger.info("成功更新交易时间配置")
-                    return True
-                else:
-                    self.logger.error("保存配置到文件失败")
-                    return False
-            else:
-                self.logger.error("更新交易时间配置失败")
-                return False
-        except Exception as e:
-            self.logger.error(f"更新交易时间配置异常: {e}")
-            return False
-    
-    def update_task_schedule(self, task_name: str, **kwargs) -> bool:
-        """更新任务调度配置"""
-        try:
-            if self.scheduler_config.update_task_schedule(task_name, **kwargs):
-                # 保存到YAML文件
-                if self.scheduler_config.save_config():
-                    self.logger.info(f"成功更新任务 {task_name} 的调度配置")
-                    return True
-                else:
-                    self.logger.error("保存配置到文件失败")
-                    return False
-            else:
-                self.logger.error(f"更新任务 {task_name} 的调度配置失败")
-                return False
-        except Exception as e:
-            self.logger.error(f"更新任务调度配置异常: {e}")
-            return False
-    
-    def enable_task(self, task_name: str) -> bool:
-        """启用指定任务"""
-        try:
-            if self.scheduler_config.enable_task(task_name):
-                if self.scheduler_config.save_config():
-                    self.logger.info(f"成功启用任务: {task_name}")
-                    return True
-                else:
-                    self.logger.error("保存配置到文件失败")
-                    return False
-            else:
-                self.logger.error(f"启用任务失败: {task_name}")
-                return False
-        except Exception as e:
-            self.logger.error(f"启用任务异常: {e}")
-            return False
-    
-    def disable_task(self, task_name: str) -> bool:
-        """禁用指定任务"""
-        try:
-            if self.scheduler_config.disable_task(task_name):
-                if self.scheduler_config.save_config():
-                    self.logger.info(f"成功禁用任务: {task_name}")
-                    return True
-                else:
-                    self.logger.error("保存配置到文件失败")
-                    return False
-            else:
-                self.logger.error(f"禁用任务失败: {task_name}")
-                return False
-        except Exception as e:
-            self.logger.error(f"禁用任务异常: {e}")
-            return False
-    
-    def update_realtime_intervals(self, tick_interval: int = None, bar_interval: int = None) -> bool:
-        """更新实时数据收集间隔"""
-        try:
-            config = self.scheduler_config.get_config()
+            # 加载环境变量
+            self._load_env_variables()
             
-            if tick_interval is not None:
-                config.data_collection.realtime_tick_interval = tick_interval
+            # 加载YAML配置文件
+            self._load_yaml_config()
             
-            if bar_interval is not None:
-                config.data_collection.realtime_bar_interval = bar_interval
+            # 环境变量覆盖配置
+            self._override_with_env_vars()
             
-            self.scheduler_config.update_config(config)
+            # 验证配置
+            self.validator.validate(self.config)
             
-            if self.scheduler_config.save_config():
-                self.logger.info("成功更新实时数据收集间隔")
-                return True
-            else:
-                self.logger.error("保存配置到文件失败")
-                return False
+            return self.config
+            
         except Exception as e:
-            self.logger.error(f"更新实时数据收集间隔异常: {e}")
-            return False
+            raise Exception(f"配置加载失败: {e}")
     
-    def update_supported_frequencies(self, frequencies: List[str]) -> bool:
-        """更新支持的数据频率"""
-        try:
-            config = self.scheduler_config.get_config()
-            config.data_collection.supported_frequencies = frequencies
-            self.scheduler_config.update_config(config)
-            
-            if self.scheduler_config.save_config():
-                self.logger.info(f"成功更新支持的数据频率: {frequencies}")
-                return True
+    def _load_env_variables(self):
+        """加载环境变量文件"""
+        env_path = self._project_root / self.env_file
+        if env_path.exists():
+            load_dotenv(env_path)
+    
+    def _load_yaml_config(self):
+        """加载YAML配置文件"""
+        config_path = self._project_root / self.config_file
+        
+        if not config_path.exists():
+            raise FileNotFoundError(f"配置文件不存在: {config_path}")
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            self.config = yaml.safe_load(f) or {}
+    
+    def _override_with_env_vars(self):
+        """使用环境变量覆盖配置"""
+        # 掘金量化配置
+        if 'gm' not in self.config:
+            self.config['gm'] = {}
+        
+        self.config['gm']['username'] = os.getenv('GM_USERNAME', self.config['gm'].get('username', ''))
+        self.config['gm']['password'] = os.getenv('GM_PASSWORD', self.config['gm'].get('password', ''))
+        self.config['gm']['token'] = os.getenv('GM_TOKEN', self.config['gm'].get('token', ''))
+        self.config['gm']['auth_type'] = os.getenv('GM_AUTH_TYPE', self.config['gm'].get('auth_type', 'username_password'))
+        
+        # MongoDB配置
+        if 'mongodb' not in self.config:
+            self.config['mongodb'] = {}
+        
+        self.config['mongodb']['host'] = os.getenv('MONGO_HOST', self.config['mongodb'].get('host', 'localhost'))
+        self.config['mongodb']['port'] = int(os.getenv('MONGO_PORT', self.config['mongodb'].get('port', 27017)))
+        self.config['mongodb']['username'] = os.getenv('MONGO_USERNAME', self.config['mongodb'].get('username', 'admin'))
+        self.config['mongodb']['password'] = os.getenv('MONGO_PASSWORD', self.config['mongodb'].get('password', 'password'))
+        self.config['mongodb']['database'] = os.getenv('MONGO_DATABASE', self.config['mongodb'].get('database', 'stock_data'))
+        self.config['mongodb']['auth_source'] = os.getenv('MONGO_AUTH_SOURCE', self.config['mongodb'].get('auth_source', 'admin'))
+        
+        # 系统配置
+        if 'system' not in self.config:
+            self.config['system'] = {}
+        
+        self.config['system']['environment'] = os.getenv('ENVIRONMENT', 'development')
+        self.config['system']['debug'] = os.getenv('DEBUG', 'false').lower() == 'true'
+        
+        # 日志配置
+        if 'logging' not in self.config:
+            self.config['logging'] = {}
+        
+        self.config['logging']['level'] = os.getenv('LOG_LEVEL', self.config['logging'].get('level', 'INFO'))
+        
+        # 同步配置
+        if 'sync' not in self.config:
+            self.config['sync'] = {}
+        
+        self.config['sync']['realtime_interval'] = int(os.getenv('REALTIME_SYNC_INTERVAL', 
+                                                                self.config['sync'].get('realtime_interval', 30)))
+        
+        if 'history' not in self.config['sync']:
+            self.config['sync']['history'] = {}
+        
+        self.config['sync']['history']['batch_size'] = int(os.getenv('HISTORY_BATCH_SIZE', 
+                                                                    self.config['sync']['history'].get('batch_size', 1000)))
+    
+    def get_config(self, key: Optional[str] = None) -> Any:
+        """获取配置值"""
+        if key is None:
+            return self.config
+        
+        keys = key.split('.')
+        value = self.config
+        
+        for k in keys:
+            if isinstance(value, dict) and k in value:
+                value = value[k]
             else:
-                self.logger.error("保存配置到文件失败")
-                return False
-        except Exception as e:
-            self.logger.error(f"更新支持的数据频率异常: {e}")
-            return False
+                return None
+        
+        return value
     
-    def reload_config(self) -> bool:
+    def set_config(self, key: str, value: Any):
+        """设置配置值"""
+        keys = key.split('.')
+        config = self.config
+        
+        for k in keys[:-1]:
+            if k not in config:
+                config[k] = {}
+            config = config[k]
+        
+        config[keys[-1]] = value
+    
+    def get_gm_config(self) -> Dict[str, Any]:
+        """获取掘金量化配置"""
+        return self.get_config('gm') or {}
+    
+    def get_mongodb_config(self) -> Dict[str, Any]:
+        """获取MongoDB配置"""
+        return self.get_config('mongodb') or {}
+    
+    def get_sync_config(self) -> Dict[str, Any]:
+        """获取同步配置"""
+        return self.get_config('sync') or {}
+    
+    def get_logging_config(self) -> Dict[str, Any]:
+        """获取日志配置"""
+        return self.get_config('logging') or {}
+    
+    def get_scheduler_config(self) -> Dict[str, Any]:
+        """获取调度器配置"""
+        return self.get_config('scheduler') or {}
+    
+    def get_stock_data_types(self) -> Dict[str, Any]:
+        """获取股票数据类型配置"""
+        return self.get_config('stock_data_types') or {}
+    
+    def is_debug_mode(self) -> bool:
+        """是否为调试模式"""
+        return self.get_config('system.debug') or False
+    
+    def get_environment(self) -> str:
+        """获取运行环境"""
+        return self.get_config('system.environment') or 'development'
+    
+    def reload_config(self):
         """重新加载配置"""
-        try:
-            if self.scheduler_config.reload_config():
-                self.logger.info("配置重新加载成功")
-                return True
-            else:
-                self.logger.error("配置重新加载失败")
-                return False
-        except Exception as e:
-            self.logger.error(f"重新加载配置异常: {e}")
-            return False
-    
-    def export_config(self, filename: str = None) -> bool:
-        """导出配置到JSON文件"""
-        try:
-            if not filename:
-                filename = f"config_export_{self._get_timestamp()}.json"
-            
-            config_data = self.get_current_config()
-            
-            with open(filename, 'w', encoding='utf-8') as file:
-                json.dump(config_data, file, ensure_ascii=False, indent=2)
-            
-            self.logger.info(f"配置导出成功: {filename}")
-            return True
-        except Exception as e:
-            self.logger.error(f"导出配置异常: {e}")
-            return False
-    
-    def import_config(self, filename: str) -> bool:
-        """从JSON文件导入配置"""
-        try:
-            with open(filename, 'r', encoding='utf-8') as file:
-                config_data = json.load(file)
-            
-            # 这里可以添加配置验证逻辑
-            # 暂时直接更新配置
-            config = self.scheduler_config.get_config()
-            
-            # 更新数据收集配置
-            if 'data_collection' in config_data:
-                dc_data = config_data['data_collection']
-                for key, value in dc_data.items():
-                    if hasattr(config.data_collection, key):
-                        setattr(config.data_collection, key, value)
-            
-            # 更新任务配置
-            if 'tasks' in config_data:
-                tasks = []
-                for task_data in config_data['tasks']:
-                    from src.config.scheduler_config import TaskSchedule
-                    task = TaskSchedule(**task_data)
-                    tasks.append(task)
-                config.tasks = tasks
-            
-            self.scheduler_config.update_config(config)
-            
-            if self.scheduler_config.save_config():
-                self.logger.info(f"配置导入成功: {filename}")
-                return True
-            else:
-                self.logger.error("保存配置到文件失败")
-                return False
-        except Exception as e:
-            self.logger.error(f"导入配置异常: {e}")
-            return False
-    
-    def get_config_summary(self) -> Dict[str, Any]:
-        """获取配置摘要信息"""
-        try:
-            config = self.scheduler_config.get_config()
-            
-            summary = {
-                "股票配置": {
-                    "上海市场": len(config.data_collection.default_sh_symbols),
-                    "深圳市场": len(config.data_collection.default_sz_symbols),
-                    "总计": len(config.data_collection.default_sh_symbols) + len(config.data_collection.default_sz_symbols)
-                },
-                "任务配置": {
-                    "总任务数": len(config.tasks),
-                    "启用任务数": len([t for t in config.tasks if t.enabled]),
-                    "禁用任务数": len([t for t in config.tasks if not t.enabled])
-                },
-                "数据收集配置": {
-                    "Tick数据间隔": f"{config.data_collection.realtime_tick_interval}秒",
-                    "Bar数据间隔": f"{config.data_collection.realtime_bar_interval}秒",
-                    "支持频率": config.data_collection.supported_frequencies
-                },
-                "交易时间": config.data_collection.trading_hours
-            }
-            
-            return summary
-        except Exception as e:
-            self.logger.error(f"获取配置摘要异常: {e}")
-            return {}
-    
-    def _get_timestamp(self) -> str:
-        """获取时间戳字符串"""
-        from datetime import datetime
-        return datetime.now().strftime("%Y%m%d_%H%M%S")
-
-
-# 全局配置管理器实例
-config_manager = ConfigManager()
-
-
-def get_config_manager() -> ConfigManager:
-    """获取配置管理器实例"""
-    return config_manager
+        self.config.clear()
+        return self.load_config()

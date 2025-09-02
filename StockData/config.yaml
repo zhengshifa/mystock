@@ -1,0 +1,134 @@
+# 掘金量化股票数据管理系统配置文件
+
+# 掘金量化配置
+gm:
+  # 认证方式配置 (username_password 或 token)
+  auth_type: "token"  # 认证类型，可选: username_password, token
+  # 掘金量化账户配置
+  username: "your_gm_username"  # 请替换为实际用户名
+  password: "your_gm_password"  # 请替换为实际密码
+  token: "d5791ecb0f33260e9fd719227c36f5c28b42e11c"        # Token认证时使用，请替换为实际token
+  # 连接配置
+  server_url: "127.0.0.1:7001"
+  timeout: 30
+  retry_times: 3
+
+# MongoDB数据库配置
+mongodb:
+  host: "localhost"
+  port: 27017
+  username: "admin"
+  password: "password"
+  database: "stock_data"
+  auth_source: "admin"
+  # 连接池配置
+  max_pool_size: 100
+  min_pool_size: 10
+  max_idle_time_ms: 30000
+  connect_timeout_ms: 5000
+  server_selection_timeout_ms: 5000
+
+# 数据同步配置
+sync:
+  # 实时数据同步间隔(秒)
+  realtime_interval: 30
+  # 历史数据同步配置
+  history:
+    # 批量大小
+    batch_size: 1000
+    # 每批次间隔(秒)
+    batch_interval: 1
+    # 最大重试次数
+    max_retries: 3
+  # 数据保留天数
+  data_retention_days: 365
+
+# 股票数据类型配置
+stock_data_types:
+  # 基础数据
+  basic:
+    - "stock_info"      # 股票基本信息
+    - "trading_calendar" # 交易日历
+  # 行情数据
+  market:
+    - "tick"            # 逐笔数据
+    - "bar"             # K线数据
+    - "quote"           # 实时行情
+  # 财务数据
+  financial:
+    - "income_statement"    # 利润表
+    - "balance_sheet"       # 资产负债表
+    - "cash_flow"           # 现金流量表
+    - "financial_indicator" # 财务指标
+  # 其他数据
+  others:
+    - "dividend"        # 分红数据
+    - "share_change"    # 股本变动
+    - "index_constituent" # 指数成分股
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+  # 日志文件配置
+  file:
+    enabled: true
+    path: "logs"
+    rotation: "1 day"
+    retention: "30 days"
+    compression: "zip"
+  # 控制台输出
+  console:
+    enabled: true
+    colorize: true
+
+# 调度系统配置
+scheduler:
+  # 调度器类型: BlockingScheduler, BackgroundScheduler, AsyncIOScheduler
+  type: "AsyncIOScheduler"
+  # 作业存储配置
+  jobstore:
+    type: "memory"  # memory, mongodb, redis
+  # 执行器配置
+  executor:
+    type: "default"
+    max_workers: 10
+  # 作业默认配置
+  job_defaults:
+    coalesce: false
+    max_instances: 3
+    misfire_grace_time: 30
+
+# 系统配置
+system:
+  # 工作目录
+  work_dir: "./data"
+  # 临时目录
+  temp_dir: "./temp"
+  # 最大并发数
+  max_concurrent: 10
+  # 请求限流配置
+  rate_limit:
+    requests_per_second: 10
+    burst_size: 20
+
+# 监控配置
+monitoring:
+  # 性能监控
+  performance:
+    enabled: true
+    interval: 60  # 秒
+  # 健康检查
+  health_check:
+    enabled: true
+    interval: 30  # 秒
+  # 告警配置
+  alerts:
+    enabled: false
+    email:
+      smtp_server: "smtp.example.com"
+      smtp_port: 587
+      username: "alert@example.com"
+      password: "password"
+      recipients:
+        - "admin@example.com"
