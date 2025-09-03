@@ -4,6 +4,7 @@
 """
 import logging
 import sys
+import os
 from datetime import datetime, timedelta
 from src.services import GMService
 from src.config import settings
@@ -11,12 +12,16 @@ from src.config import settings
 
 def setup_logging():
     """设置日志"""
+    # 获取项目根目录
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    log_file = os.path.join(project_root, 'logs', 'gm_test.log')
+    
     logging.basicConfig(
         level=getattr(logging, settings.log_level),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler('gm_test.log', encoding='utf-8')
+            logging.FileHandler(log_file, encoding='utf-8')
         ]
     )
 

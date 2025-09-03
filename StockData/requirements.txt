@@ -1,0 +1,10 @@
+gm>=3.0.0
+pandas>=1.5.0
+python-dotenv>=1.0.0
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pymongo>=4.0.0
+motor>=3.0.0
+apscheduler>=3.10.0
+asyncio-mqtt>=0.13.0
+aiofiles>=23.0.0

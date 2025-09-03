@@ -302,6 +302,65 @@ class DataSyncService:
         
         return all_results
     
+    async def sync_incremental_data(self, symbols: List[str], days_back: int = 1) -> Dict[str, Dict[str, bool]]:
+        """
+        执行增量数据同步
+        
+        Args:
+            symbols: 股票代码列表
+            days_back: 向前同步的天数，0表示当日，1表示前一日
+            
+        Returns:
+            Dict[str, Dict[str, bool]]: 每个频率每个股票的同步结果
+        """
+        all_results = {}
+        
+        try:
+            self.logger.info(f"开始执行增量数据同步，向前{days_back}天")
+            
+            # 计算同步的日期范围
+            from datetime import datetime, timedelta
+            end_date = datetime.now().date() - timedelta(days=days_back)
+            start_date = end_date - timedelta(days=1)
+            
+            start_date_str = start_date.strftime('%Y-%m-%d')
+            end_date_str = end_date.strftime('%Y-%m-%d')
+            
+            self.logger.info(f"增量同步日期范围: {start_date_str} 到 {end_date_str}")
+            
+            # 同步所有频率的历史数据
+            for frequency in settings.enabled_frequencies:
+                if settings.is_frequency_enabled(frequency):
+                    self.logger.info(f"开始增量同步 {frequency} 数据")
+                    results = await self.sync_history_data(
+                        symbols, 
+                        start_date=start_date_str, 
+                        end_date=end_date_str, 
+                        frequency=frequency
+                    )
+                    all_results[frequency] = results
+                else:
+                    all_results[frequency] = {symbol: False for symbol in symbols}
+            
+            # 统计总体成功率
+            total_success = 0
+            total_count = 0
+            for freq_results in all_results.values():
+                for success in freq_results.values():
+                    total_count += 1
+                    if success:
+                        total_success += 1
+            
+            self.logger.info(f"增量数据同步完成: {total_success}/{total_count} 成功")
+            
+        except Exception as e:
+            self.logger.error(f"增量数据同步失败: {e}")
+            # 返回失败结果
+            for frequency in settings.enabled_frequencies:
+                all_results[frequency] = {symbol: False for symbol in symbols}
+        
+        return all_results
+    
     async def is_trading_time(self) -> bool:
         """
         判断是否在交易时间
@@ -312,11 +371,65 @@ class DataSyncService:
         now = datetime.now()
         current_time = now.strftime('%H:%M')
         
-        # 简单的交易时间判断（工作日 09:30-15:00）
+        # 周末不交易
         if now.weekday() >= 5:  # 周末
             return False
         
-        return settings.realtime_sync_start <= current_time <= settings.realtime_sync_end
+        # 从配置文件读取交易时间
+        morning_start = settings.trading_morning_start
+        morning_end = settings.trading_morning_end
+        afternoon_start = settings.trading_afternoon_start
+        afternoon_end = settings.trading_afternoon_end
+        
+        # 上午交易时间
+        if morning_start <= current_time <= morning_end:
+            return True
+        
+        # 下午交易时间
+        if afternoon_start <= current_time <= afternoon_end:
+            return True
+        
+        return False
+    
+    async def is_pre_market_time(self) -> bool:
+        """
+        判断是否在开盘前时间（适合做增量同步）
+        
+        Returns:
+            bool: 是否在开盘前时间
+        """
+        now = datetime.now()
+        current_time = now.strftime('%H:%M')
+        
+        # 周末不执行
+        if now.weekday() >= 5:
+            return False
+        
+        # 开盘前时间：08:30-09:30
+        pre_market_start = "08:30"
+        pre_market_end = "09:30"
+        
+        return pre_market_start <= current_time <= pre_market_end
+    
+    async def is_post_market_time(self) -> bool:
+        """
+        判断是否在收盘后时间（适合做增量同步）
+        
+        Returns:
+            bool: 是否在收盘后时间
+        """
+        now = datetime.now()
+        current_time = now.strftime('%H:%M')
+        
+        # 周末不执行
+        if now.weekday() >= 5:
+            return False
+        
+        # 收盘后时间：15:30-16:30
+        post_market_start = "15:30"
+        post_market_end = "16:30"
+        
+        return post_market_start <= current_time <= post_market_end
     
     async def start_realtime_sync(self, symbols: List[str]):
         """

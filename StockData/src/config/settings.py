@@ -50,8 +50,17 @@ class Settings:
         self.sync_interval_minutes: int = int(os.getenv('SYNC_INTERVAL_MINUTES', '5'))
         self.realtime_interval_seconds: int = int(os.getenv('REALTIME_INTERVAL_SECONDS', '30'))
         self.history_sync_time: str = os.getenv('HISTORY_SYNC_TIME', '09:30')
-        self.realtime_sync_start: str = os.getenv('REALTIME_SYNC_START', '09:30')
-        self.realtime_sync_end: str = os.getenv('REALTIME_SYNC_END', '15:00')
+        
+        # 交易时间配置
+        self.trading_morning_start: str = os.getenv('TRADING_MORNING_START', '09:30')
+        self.trading_morning_end: str = os.getenv('TRADING_MORNING_END', '11:30')
+        self.trading_afternoon_start: str = os.getenv('TRADING_AFTERNOON_START', '13:00')
+        self.trading_afternoon_end: str = os.getenv('TRADING_AFTERNOON_END', '15:00')
+        
+        # 增量同步配置
+        self.pre_market_sync_time: str = os.getenv('PRE_MARKET_SYNC_TIME', '08:30')
+        self.post_market_sync_time: str = os.getenv('POST_MARKET_SYNC_TIME', '15:30')
+        self.incremental_sync_enabled: bool = os.getenv('INCREMENTAL_SYNC_ENABLED', 'true').lower() == 'true'
         
         # 数据频率配置
         enabled_frequencies_str = os.getenv('ENABLED_FREQUENCIES', '60s,300s,900s,1800s,3600s,1d')
@@ -69,6 +78,11 @@ class Settings:
         self.batch_size: int = int(os.getenv('BATCH_SIZE', '100'))
         self.max_retry_times: int = int(os.getenv('MAX_RETRY_TIMES', '3'))
         self.retry_delay_seconds: int = int(os.getenv('RETRY_DELAY_SECONDS', '5'))
+        
+        # 标的基本信息同步配置
+        self.symbol_sync_enabled: bool = os.getenv('SYMBOL_SYNC_ENABLED', 'true').lower() == 'true'
+        self.symbol_sync_time: str = os.getenv('SYMBOL_SYNC_TIME', '09:00')
+        self.symbol_sync_all_types: bool = os.getenv('SYMBOL_SYNC_ALL_TYPES', 'true').lower() == 'true'
     
     def get_frequency_collection_name(self, frequency: str) -> str:
         """

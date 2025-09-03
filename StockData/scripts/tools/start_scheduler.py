@@ -6,6 +6,7 @@ import asyncio
 import logging
 import signal
 import sys
+import os
 from src.scheduler import SchedulerService
 from src.database import mongodb_client
 from src.config import settings
@@ -13,12 +14,16 @@ from src.config import settings
 
 def setup_logging():
     """设置日志"""
+    # 获取项目根目录
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    log_file = os.path.join(project_root, 'logs', 'scheduler.log')
+    
     logging.basicConfig(
         level=getattr(logging, settings.log_level),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler('scheduler.log', encoding='utf-8')
+            logging.FileHandler(log_file, encoding='utf-8')
         ]
     )
 
@@ -84,7 +89,7 @@ class SchedulerApp:
         print(f"同步间隔: {settings.sync_interval_minutes} 分钟")
         print(f"实时同步间隔: {settings.realtime_interval_seconds} 秒")
         print(f"历史同步时间: {settings.history_sync_time}")
-        print(f"实时同步时间: {settings.realtime_sync_start} - {settings.realtime_sync_end}")
+        print(f"交易时间: 上午 {settings.trading_morning_start}-{settings.trading_morning_end}, 下午 {settings.trading_afternoon_start}-{settings.trading_afternoon_end}")
         print(f"MongoDB: {settings.mongodb_database}")
         print("="*60)
         print("调度系统正在运行，按 Ctrl+C 停止")

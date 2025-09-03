@@ -8,6 +8,7 @@ from typing import List, Dict, Optional, Any
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase, AsyncIOMotorCollection
 from pymongo.errors import ConnectionFailure, OperationFailure
+from pymongo import ReplaceOne
 from ..config import settings
 
 
@@ -44,7 +45,8 @@ class MongoDBClient:
             # 初始化集合
             self._collections = {
                 'tick': self.database[settings.mongodb_collection_tick],
-                'sync_log': self.database[settings.mongodb_collection_sync_log]
+                'sync_log': self.database[settings.mongodb_collection_sync_log],
+                'symbol_info': self.database['symbol_info']
             }
             
             # 初始化多频率Bar集合
@@ -353,6 +355,199 @@ class MongoDBClient:
             
         except Exception as e:
             self.logger.error(f"获取频率统计失败: {e}")
+            return {}
+    
+    async def save_symbol_infos(self, symbol_infos: List[Dict]) -> bool:
+        """
+        保存标的基本信息到数据库
+        
+        Args:
+            symbol_infos: 标的基本信息列表
+            
+        Returns:
+            bool: 保存是否成功
+        """
+        try:
+            if not symbol_infos:
+                self.logger.warning("没有标的基本信息需要保存")
+                return True
+            
+            collection = self._collections['symbol_info']
+            
+            # 准备批量操作
+            operations = []
+            for info in symbol_infos:
+                # 使用symbol作为唯一标识符
+                filter_doc = {'symbol': info['symbol']}
+                
+                # 添加时间戳
+                info['updated_at'] = datetime.now()
+                if 'created_at' not in info:
+                    info['created_at'] = datetime.now()
+                
+                # 使用upsert操作（存在则更新，不存在则插入）
+                operations.append(ReplaceOne(
+                    filter=filter_doc,
+                    replacement=info,
+                    upsert=True
+                ))
+            
+            # 执行批量操作
+            if operations:
+                result = await collection.bulk_write(operations)
+                self.logger.info(f"成功保存 {len(symbol_infos)} 条标的基本信息，"
+                               f"插入: {result.upserted_count}, 更新: {result.modified_count}")
+                return True
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"保存标的基本信息失败: {e}")
+            return False
+    
+    async def get_symbol_infos(self, 
+                              sec_type1: Optional[int] = None,
+                              sec_type2: Optional[int] = None,
+                              exchange: Optional[str] = None,
+                              limit: int = 100) -> List[Dict]:
+        """
+        从数据库查询标的基本信息
+        
+        Args:
+            sec_type1: 证券品种大类
+            sec_type2: 证券品种细类
+            exchange: 交易所代码
+            limit: 限制数量
+            
+        Returns:
+            List[Dict]: 标的基本信息列表
+        """
+        try:
+            collection = self._collections['symbol_info']
+            
+            # 构建查询条件
+            filter_doc = {}
+            if sec_type1 is not None:
+                filter_doc['sec_type1'] = sec_type1
+            if sec_type2 is not None:
+                filter_doc['sec_type2'] = sec_type2
+            if exchange:
+                filter_doc['exchange'] = exchange
+            
+            cursor = collection.find(filter_doc).sort('symbol', 1).limit(limit)
+            results = await cursor.to_list(length=limit)
+            
+            self.logger.info(f"从数据库查询到 {len(results)} 条标的基本信息")
+            return results
+            
+        except Exception as e:
+            self.logger.error(f"查询标的基本信息失败: {e}")
+            return []
+    
+    async def get_symbol_info_by_symbol(self, symbol: str) -> Optional[Dict]:
+        """
+        根据标的代码查询标的基本信息
+        
+        Args:
+            symbol: 标的代码
+            
+        Returns:
+            Optional[Dict]: 标的基本信息，如果不存在返回None
+        """
+        try:
+            collection = self._collections['symbol_info']
+            result = await collection.find_one({'symbol': symbol})
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"查询标的 {symbol} 基本信息失败: {e}")
+            return None
+    
+    async def delete_symbol_info(self, symbol: str) -> bool:
+        """
+        删除标的基本信息
+        
+        Args:
+            symbol: 标的代码
+            
+        Returns:
+            bool: 删除是否成功
+        """
+        try:
+            collection = self._collections['symbol_info']
+            result = await collection.delete_one({'symbol': symbol})
+            
+            if result.deleted_count > 0:
+                self.logger.info(f"成功删除标的 {symbol} 的基本信息")
+                return True
+            else:
+                self.logger.warning(f"标的 {symbol} 的基本信息不存在")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"删除标的 {symbol} 基本信息失败: {e}")
+            return False
+    
+    async def get_symbol_info_statistics(self) -> Dict[str, Any]:
+        """
+        获取标的基本信息统计
+        
+        Returns:
+            Dict[str, Any]: 统计信息
+        """
+        try:
+            collection = self._collections['symbol_info']
+            
+            # 总数量
+            total_count = await collection.count_documents({})
+            
+            # 按证券大类统计
+            pipeline = [
+                {'$group': {
+                    '_id': '$sec_type1',
+                    'count': {'$sum': 1}
+                }},
+                {'$sort': {'count': -1}}
+            ]
+            
+            type1_stats = []
+            async for doc in collection.aggregate(pipeline):
+                type1_stats.append({
+                    'sec_type1': doc['_id'],
+                    'count': doc['count']
+                })
+            
+            # 按交易所统计
+            pipeline = [
+                {'$group': {
+                    '_id': '$exchange',
+                    'count': {'$sum': 1}
+                }},
+                {'$sort': {'count': -1}}
+            ]
+            
+            exchange_stats = []
+            async for doc in collection.aggregate(pipeline):
+                exchange_stats.append({
+                    'exchange': doc['_id'],
+                    'count': doc['count']
+                })
+            
+            # 最新更新时间
+            latest = await collection.find_one(
+                {}, sort=[('updated_at', -1)], projection={'updated_at': 1, 'symbol': 1}
+            )
+            
+            return {
+                'total_count': total_count,
+                'type1_statistics': type1_stats,
+                'exchange_statistics': exchange_stats,
+                'latest_update': latest['updated_at'] if latest else None,
+                'latest_symbol': latest['symbol'] if latest else None
+            }
+            
+        except Exception as e:
+            self.logger.error(f"获取标的基本信息统计失败: {e}")
             return {}
     
     async def health_check(self) -> bool:

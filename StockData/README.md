@@ -2,12 +2,12 @@
 
 ## 项目简介
 
-这是一个用于测试掘金量化SDK接口的Python项目，主要测试`current`和`history`两个核心接口的功能。
+这是一个用于测试掘金量化SDK接口的Python项目，主要测试`current`和`history`两个核心接口的功能。项目默认以调度模式运行，实现免交互的自动化数据同步。
 
 ## 项目结构
 
 ```
-stockdata-v3/
+StockData/
 ├── src/                    # 源代码目录
 │   ├── config/            # 配置模块
 │   │   ├── __init__.py
@@ -19,14 +19,36 @@ stockdata-v3/
 │   ├── services/          # 服务层
 │   │   ├── __init__.py
 │   │   └── gm_service.py  # 掘金量化服务
+│   ├── database/          # 数据库模块
+│   │   ├── __init__.py
+│   │   └── mongodb_client.py  # MongoDB客户端
+│   ├── scheduler/         # 调度模块
+│   │   ├── __init__.py
+│   │   ├── scheduler_service.py  # 调度服务
+│   │   └── data_sync.py   # 数据同步服务
 │   └── __init__.py
-├── tests/                 # 测试目录
-├── docs/                  # 文档目录
-├── test_gm_api.py         # 基础API测试脚本
-├── advanced_test.py       # 高级功能测试脚本
-├── config.env             # 环境配置文件
-├── pyproject.toml         # 项目配置
-└── README.md              # 项目说明
+├── scripts/               # 脚本工具包
+│   ├── tests/            # 测试脚本
+│   │   ├── test_gm_api.py         # API测试
+│   │   ├── test_scheduler.py      # 调度器测试
+│   │   ├── test_multi_frequency.py # 多频率测试
+│   │   └── advanced_test.py       # 高级测试
+│   ├── tools/            # 工具脚本
+│   │   ├── query_data.py          # 数据查询工具
+│   │   └── start_scheduler.py     # 调度器工具
+│   └── README.md         # 脚本说明
+├── logs/                 # 日志目录
+│   ├── stock_data_app.log        # 主应用日志
+│   ├── gm_test.log              # API测试日志
+│   ├── scheduler_test.log        # 调度器测试日志
+│   ├── multi_frequency_test.log  # 多频率测试日志
+│   ├── scheduler.log             # 调度器运行日志
+│   └── README.md                 # 日志说明
+├── main.py               # 主应用入口
+├── start.py              # 统一启动脚本
+├── config.env            # 环境配置文件
+├── requirements.txt      # 依赖配置
+└── README.md             # 项目说明
 ```
 
 ## 功能特性
@@ -40,6 +62,7 @@ stockdata-v3/
 - **history接口**: 查询历史行情数据
 
 ### 3. 调度系统
+- **免交互启动**: 默认以调度模式运行，无需人工干预
 - **定时任务调度**: 使用APScheduler实现定时数据同步
 - **增量数据同步**: 智能识别最新数据，避免重复同步
 - **实时数据获取**: 交易时间内定期获取实时行情
@@ -70,36 +93,79 @@ uv sync
 GM_TOKEN=your_token_here
 ```
 
-### 4. 运行测试
+### 4. 运行程序
 
-#### 基础API测试
+#### 使用统一启动脚本（推荐）
 ```bash
-uv run python test_gm_api.py
+# 调度模式（默认，免交互）
+uv run python start.py
+
+# 交互模式
+uv run python start.py interactive
+
+# 调度模式（明确指定）
+uv run python start.py scheduler
+
+# 测试模式
+uv run python start.py test
+
+# 同步模式
+uv run python start.py sync
+
+# 查询模式
+uv run python start.py query
+
+# 自动模式
+uv run python start.py auto
 ```
 
-#### 高级功能测试
+#### 运行测试脚本
 ```bash
-uv run python advanced_test.py
+# API测试
+uv run python start.py test-api
+
+# 调度器测试
+uv run python start.py test-scheduler
+
+# 多频率测试
+uv run python start.py test-multi
+
+# 高级测试
+uv run python start.py test-advanced
 ```
 
-#### 调度系统测试
+#### 运行工具脚本
 ```bash
-uv run python test_scheduler.py
+# 数据查询工具
+uv run python start.py query-tool
+
+# 调度器工具
+uv run python start.py scheduler-tool
 ```
 
-#### 多频率功能测试
+#### 直接运行主程序
 ```bash
-uv run python test_multi_frequency.py
+# 交互模式
+uv run python main.py
+
+# 调度模式
+uv run python main.py scheduler
+
+# 测试模式
+uv run python main.py test
 ```
 
-#### 启动调度器
+#### 直接运行脚本（不推荐）
 ```bash
-uv run python start_scheduler.py
-```
+# 测试脚本
+uv run python scripts/tests/test_gm_api.py
+uv run python scripts/tests/test_scheduler.py
+uv run python scripts/tests/test_multi_frequency.py
+uv run python scripts/tests/advanced_test.py
 
-#### 数据查询工具
-```bash
-uv run python query_data.py
+# 工具脚本
+uv run python scripts/tools/query_data.py
+uv run python scripts/tools/start_scheduler.py
 ```
 
 ## 测试结果
@@ -178,8 +244,11 @@ uv run python query_data.py
 3. 时间范围查询不能超过数据可用范围
 4. 分钟线数据在非交易时间可能返回空结果
 5. 确保MongoDB服务正在运行
-6. 调度器默认在交易时间内运行实时同步
-7. 历史数据同步每日定时执行，避免重复同步
+6. **默认启动模式**: 直接运行 `uv run python start.py` 将启动调度系统，无需交互
+7. **交易时间配置**: 可通过配置文件自定义交易时间，默认(09:30-11:30, 13:00-15:00)，非交易时间自动跳过实时同步
+8. **增量同步策略**: 开盘前(08:30)和收盘后(15:30)执行增量同步，确保数据完整性
+9. 历史数据同步每日定时执行，避免重复同步
+10. 如需交互模式，请使用 `uv run python start.py interactive`
 
 ## 调度系统配置
 
@@ -201,8 +270,17 @@ SCHEDULER_ENABLED=true
 SYNC_INTERVAL_MINUTES=5
 REALTIME_INTERVAL_SECONDS=30
 HISTORY_SYNC_TIME=09:30
-REALTIME_SYNC_START=09:30
-REALTIME_SYNC_END=15:00
+
+# 交易时间配置（用户可自定义）
+TRADING_MORNING_START=09:30
+TRADING_MORNING_END=11:30
+TRADING_AFTERNOON_START=13:00
+TRADING_AFTERNOON_END=15:00
+
+# 增量同步配置
+PRE_MARKET_SYNC_TIME=08:30
+POST_MARKET_SYNC_TIME=15:30
+INCREMENTAL_SYNC_ENABLED=true
 
 # 数据频率配置
 ENABLED_FREQUENCIES=60s,300s,900s,1800s,3600s,1d
@@ -214,11 +292,42 @@ SYNC_FREQUENCY_3600S=true
 SYNC_FREQUENCY_1D=true
 ```
 
+### 交易时间配置说明
+
+系统支持用户自定义交易时间，通过修改 `config.env` 文件中的以下配置项：
+
+```bash
+# 交易时间配置（用户可自定义）
+TRADING_MORNING_START=09:30    # 上午交易开始时间
+TRADING_MORNING_END=11:30      # 上午交易结束时间
+TRADING_AFTERNOON_START=13:00  # 下午交易开始时间
+TRADING_AFTERNOON_END=15:00    # 下午交易结束时间
+```
+
+**配置示例**：
+- **A股市场**：09:30-11:30, 13:00-15:00（默认）
+- **港股市场**：09:30-12:00, 13:00-16:00
+- **美股市场**：21:30-04:00（次日）
+- **自定义时间**：根据实际需求调整
+
+**注意事项**：
+- 时间格式必须为 `HH:MM`（24小时制）
+- 修改配置后需要重启系统生效
+- 周末自动跳过所有交易相关任务
+
 ### 调度任务说明
 1. **每日历史数据同步**: 每天09:30执行，增量同步所有频率的历史数据
-2. **实时数据同步**: 每30秒执行一次，仅在交易时间内运行，同步Tick和分钟级数据
-3. **分钟数据同步**: 每5分钟执行一次，同步所有分钟级频率的K线数据
-4. **健康检查**: 每分钟执行一次，检查系统状态
+2. **开盘前增量同步**: 每天08:30执行，同步前一日的数据，确保开盘前数据完整
+3. **收盘后增量同步**: 每天15:30执行，同步当日的数据，确保收盘后数据完整
+4. **实时数据同步**: 每30秒执行一次，仅在交易时间内运行，同步Tick和分钟级数据
+5. **分钟数据同步**: 每5分钟执行一次，仅在交易时间内运行，同步所有分钟级频率的K线数据
+6. **健康检查**: 每分钟执行一次，检查系统状态
+
+### 交易时间优化
+- **可配置交易时间**: 支持用户自定义交易时间，通过配置文件灵活调整
+- **精确交易时间判断**: 支持上午和下午两个交易时段，默认(09:30-11:30, 13:00-15:00)
+- **非交易时间跳过**: 实时同步和分钟数据同步仅在交易时间内执行，节省资源
+- **增量同步策略**: 开盘前和收盘后进行增量同步，确保数据完整性
 
 ### 多频率数据说明
 - **60s**: 1分钟K线数据，存储到bar_60s集合

@@ -138,6 +138,48 @@ class GMService:
             self.logger.error(f"获取历史行情失败: {e}")
             raise
     
+    def get_symbol_infos(self, 
+                        sec_type1: int, 
+                        sec_type2: Optional[int] = None, 
+                        exchanges: Optional[Union[str, List[str]]] = None, 
+                        symbols: Optional[Union[str, List[str]]] = None, 
+                        df: bool = False) -> Union[List[Dict], 'DataFrame']:
+        """
+        查询标的基本信息
+        
+        Args:
+            sec_type1: 证券品种大类，必填
+            sec_type2: 证券品种细类，可选
+            exchanges: 交易所代码，可选
+            symbols: 标的代码，可选
+            df: 是否返回DataFrame格式，默认False返回字典格式
+            
+        Returns:
+            Union[List[Dict], DataFrame]: 标的基本信息列表或DataFrame
+        """
+        try:
+            self.logger.info(f"查询标的基本信息: sec_type1={sec_type1}, sec_type2={sec_type2}, exchanges={exchanges}, symbols={symbols}")
+            
+            # 调用掘金量化API
+            raw_data = gm.get_symbol_infos(
+                sec_type1=sec_type1,
+                sec_type2=sec_type2,
+                exchanges=exchanges,
+                symbols=symbols,
+                df=df
+            )
+            
+            if df:
+                self.logger.info(f"成功获取标的基本信息DataFrame，形状: {raw_data.shape}")
+            else:
+                self.logger.info(f"成功获取 {len(raw_data)} 条标的基本信息")
+            
+            return raw_data
+            
+        except Exception as e:
+            self.logger.error(f"获取标的基本信息失败: {e}")
+            raise
+
     def test_connection(self) -> bool:
         """
         测试连接是否正常
