@@ -4,6 +4,7 @@
 """
 import os
 from typing import Optional
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 
@@ -21,12 +22,27 @@ class Settings:
             raise ValueError("GM_TOKEN 环境变量未设置")
         
         # 数据时间范围配置
-        self.start_date: str = os.getenv('START_DATE', '2024-01-01')
-        self.end_date: str = os.getenv('END_DATE', '2024-12-31')
+        # 当START_DATE和END_DATE为空时，默认使用最新180天的数据
+        start_date_env = os.getenv('START_DATE', '').strip()
+        end_date_env = os.getenv('END_DATE', '').strip()
+        
+        if not start_date_env or not end_date_env:
+            # 计算默认180天时间范围
+            end_date = datetime.now().date()
+            start_date = end_date - timedelta(days=180)
+            self.start_date = start_date.strftime('%Y-%m-%d')
+            self.end_date = end_date.strftime('%Y-%m-%d')
+        else:
+            self.start_date = start_date_env
+            self.end_date = end_date_env
         
         # 测试股票代码
-        test_symbols_str = os.getenv('TEST_SYMBOLS', 'SZSE.000001,SHSE.000300')
-        self.test_symbols: list[str] = [s.strip() for s in test_symbols_str.split(',')]
+        # 当TEST_SYMBOLS为空时，表示同步全部股票
+        test_symbols_str = os.getenv('TEST_SYMBOLS', '').strip()
+        if test_symbols_str:
+            self.test_symbols: list[str] = [s.strip() for s in test_symbols_str.split(',') if s.strip()]
+        else:
+            self.test_symbols: list[str] = []  # 空列表表示全部股票
         
         # 日志配置
         self.log_level: str = os.getenv('LOG_LEVEL', 'INFO')
@@ -124,6 +140,29 @@ class Settings:
         }
         return frequency_switches.get(frequency, False)
     
+    def get_default_date_range(self, days: int = 180) -> tuple[str, str]:
+        """
+        获取默认日期范围
+        
+        Args:
+            days: 天数，默认180天
+            
+        Returns:
+            tuple[str, str]: (开始日期, 结束日期)
+        """
+        end_date = datetime.now().date()
+        start_date = end_date - timedelta(days=days)
+        return start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+    
+    def is_all_symbols_mode(self) -> bool:
+        """
+        检查是否使用全部股票模式
+        
+        Returns:
+            bool: 是否使用全部股票
+        """
+        return len(self.test_symbols) == 0
+    
     def validate(self) -> bool:
         """
         验证配置的有效性
@@ -135,8 +174,17 @@ class Settings:
             print("错误: GM_TOKEN 未设置")
             return False
         
-        if not self.test_symbols:
-            print("错误: 测试股票代码未设置")
+        # 允许空股票列表（表示全部股票模式）
+        # if not self.test_symbols:
+        #     print("错误: 测试股票代码未设置")
+        #     return False
+        
+        # 验证日期格式
+        try:
+            datetime.strptime(self.start_date, '%Y-%m-%d')
+            datetime.strptime(self.end_date, '%Y-%m-%d')
+        except ValueError:
+            print(f"错误: 日期格式无效 - 开始日期: {self.start_date}, 结束日期: {self.end_date}")
             return False
         
         return True

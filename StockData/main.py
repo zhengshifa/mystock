@@ -104,7 +104,10 @@ class StockDataApp:
                 print("✅ 掘金量化API连接正常")
                 
                 # 获取测试数据
-                test_symbol = settings.test_symbols[0]
+                if settings.is_all_symbols_mode():
+                    test_symbol = 'SZSE.000001'  # 使用默认测试股票
+                else:
+                    test_symbol = settings.test_symbols[0]
                 current_data = self.gm_service.get_current_data(symbols=test_symbol)
                 
                 if current_data:
@@ -156,8 +159,19 @@ class StockDataApp:
         print("="*60)
         
         try:
-            symbols = settings.test_symbols
-            print(f"同步股票: {', '.join(symbols)}")
+            # 获取要同步的股票列表
+            if settings.is_all_symbols_mode():
+                print("全部股票模式：从数据库获取所有A股列表...")
+                from src.database import mongodb_client
+                symbols = await mongodb_client.get_all_stock_symbols()
+                if not symbols:
+                    print("❌ 未获取到股票列表，请先同步标的基本信息")
+                    return
+                print(f"获取到 {len(symbols)} 个股票，开始同步...")
+            else:
+                symbols = settings.test_symbols
+                print(f"指定股票模式：同步 {len(symbols)} 个股票")
+                print(f"同步股票: {', '.join(symbols)}")
             
             # 同步所有频率数据
             print("开始同步所有频率数据...")
@@ -556,7 +570,12 @@ class StockDataApp:
             
             # 配置信息
             print(f"\n配置信息:")
-            print(f"  监控股票: {', '.join(settings.test_symbols)}")
+            if settings.is_all_symbols_mode():
+                print(f"  监控模式: 全部股票模式")
+                print(f"  股票数量: 从数据库动态获取")
+            else:
+                print(f"  监控模式: 指定股票模式")
+                print(f"  监控股票: {', '.join(settings.test_symbols)}")
             print(f"  同步间隔: {settings.sync_interval_minutes} 分钟")
             print(f"  实时间隔: {settings.realtime_interval_seconds} 秒")
             print(f"  启用频率: {', '.join(settings.enabled_frequencies)}")
@@ -635,7 +654,12 @@ class StockDataApp:
             await self.start_scheduler()
             
             # 打印状态信息
-            print(f"监控股票: {', '.join(settings.test_symbols)}")
+            if settings.is_all_symbols_mode():
+                print(f"监控模式: 全部股票模式")
+                print(f"股票数量: 从数据库动态获取")
+            else:
+                print(f"监控模式: 指定股票模式")
+                print(f"监控股票: {', '.join(settings.test_symbols)}")
             print(f"同步间隔: {settings.sync_interval_minutes} 分钟")
             print(f"实时间隔: {settings.realtime_interval_seconds} 秒")
             print(f"历史同步时间: {settings.history_sync_time}")

@@ -34,6 +34,28 @@ class SchedulerService:
             EVENT_JOB_EXECUTED | EVENT_JOB_ERROR
         )
     
+    async def get_sync_symbols(self) -> List[str]:
+        """
+        获取要同步的股票列表
+        
+        Returns:
+            List[str]: 股票代码列表
+        """
+        if settings.is_all_symbols_mode():
+            # 全部股票模式：从数据库获取所有A股
+            from ..database import mongodb_client
+            symbols = await mongodb_client.get_all_stock_symbols()
+            if symbols:
+                self.logger.info(f"全部股票模式：获取到 {len(symbols)} 个股票")
+                return symbols
+            else:
+                self.logger.warning("全部股票模式：未获取到股票列表，使用默认股票")
+                return ['SZSE.000001', 'SHSE.600111']  # 默认股票
+        else:
+            # 指定股票模式
+            self.logger.info(f"指定股票模式：使用配置的 {len(self.symbols)} 个股票")
+            return self.symbols
+    
     def _job_executed_listener(self, event):
         """任务执行监听器"""
         if event.exception:
@@ -146,7 +168,8 @@ class SchedulerService:
         """每日历史数据同步任务"""
         self.logger.info("开始执行每日历史数据同步")
         try:
-            results = await self.data_sync_service.sync_all_frequencies(self.symbols)
+            symbols = await self.get_sync_symbols()
+            results = await self.data_sync_service.sync_all_frequencies(symbols)
             
             # 统计各频率的成功率
             for frequency, freq_results in results.items():
@@ -166,7 +189,8 @@ class SchedulerService:
                 return
             
             # 执行增量同步，主要同步前一日的数据
-            results = await self.data_sync_service.sync_incremental_data(self.symbols, days_back=1)
+            symbols = await self.get_sync_symbols()
+            results = await self.data_sync_service.sync_incremental_data(symbols, days_back=1)
             
             # 统计各频率的成功率
             for frequency, freq_results in results.items():
@@ -186,7 +210,8 @@ class SchedulerService:
                 return
             
             # 执行增量同步，主要同步当日的数据
-            results = await self.data_sync_service.sync_incremental_data(self.symbols, days_back=0)
+            symbols = await self.get_sync_symbols()
+            results = await self.data_sync_service.sync_incremental_data(symbols, days_back=0)
             
             # 统计各频率的成功率
             for frequency, freq_results in results.items():
@@ -202,7 +227,8 @@ class SchedulerService:
             is_trading = await self.data_sync_service.is_trading_time()
             if is_trading:
                 self.logger.info("当前在交易时间内，开始执行实时数据同步")
-                results = await self.data_sync_service.sync_realtime_frequencies(self.symbols)
+                symbols = await self.get_sync_symbols()
+                results = await self.data_sync_service.sync_realtime_frequencies(symbols)
                 
                 # 统计各频率的成功率
                 for frequency, freq_results in results.items():
@@ -219,11 +245,12 @@ class SchedulerService:
             is_trading = await self.data_sync_service.is_trading_time()
             if is_trading:
                 self.logger.info("当前在交易时间内，开始执行分钟数据同步")
+                symbols = await self.get_sync_symbols()
                 # 同步所有分钟级频率的数据
                 for frequency in settings.enabled_frequencies:
                     if settings.is_frequency_enabled(frequency) and frequency != '1d':
                         results = await self.data_sync_service.sync_minute_data(
-                            self.symbols, minutes_back=10, frequency=frequency
+                            symbols, minutes_back=10, frequency=frequency
                         )
                         success_count = sum(1 for success in results.values() if success)
                         self.logger.info(f"{frequency}分钟数据同步: {success_count}/{len(results)} 成功")
@@ -357,7 +384,8 @@ class SchedulerService:
     async def start_realtime_sync_manual(self):
         """手动启动实时数据同步"""
         self.logger.info("手动启动实时数据同步")
-        await self.data_sync_service.start_realtime_sync(self.symbols)
+        symbols = await self.get_sync_symbols()
+        await self.data_sync_service.start_realtime_sync(symbols)
     
     def stop_realtime_sync_manual(self):
         """手动停止实时数据同步"""
@@ -373,11 +401,12 @@ class SchedulerService:
         """
         self.logger.info(f"手动同步 {frequency} 频率数据")
         try:
+            symbols = await self.get_sync_symbols()
             if frequency == 'tick':
-                results = await self.data_sync_service.sync_realtime_data(self.symbols)
+                results = await self.data_sync_service.sync_realtime_data(symbols)
             else:
                 results = await self.data_sync_service.sync_history_data(
-                    self.symbols, frequency=frequency
+                    symbols, frequency=frequency
                 )
             
             success_count = sum(1 for success in results.values() if success)
@@ -390,7 +419,8 @@ class SchedulerService:
         """手动同步所有频率数据"""
         self.logger.info("手动同步所有频率数据")
         try:
-            results = await self.data_sync_service.sync_all_frequencies(self.symbols)
+            symbols = await self.get_sync_symbols()
+            results = await self.data_sync_service.sync_all_frequencies(symbols)
             
             # 统计各频率的成功率
             for frequency, freq_results in results.items():

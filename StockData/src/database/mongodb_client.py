@@ -488,6 +488,72 @@ class MongoDBClient:
             self.logger.error(f"删除标的 {symbol} 基本信息失败: {e}")
             return False
     
+    async def get_all_stock_symbols(self, sec_type1: int = 1010, sec_type2: int = 101001) -> List[str]:
+        """
+        获取所有股票代码列表
+        
+        Args:
+            sec_type1: 证券品种大类，默认1010(股票)
+            sec_type2: 证券品种细类，默认101001(A股)
+            
+        Returns:
+            List[str]: 股票代码列表
+        """
+        try:
+            collection = self._collections['symbol_info']
+            
+            # 查询指定类型的股票
+            cursor = collection.find(
+                {'sec_type1': sec_type1, 'sec_type2': sec_type2},
+                {'symbol': 1, '_id': 0}
+            ).sort('symbol', 1)
+            
+            symbols = await cursor.to_list(length=None)
+            symbol_list = [doc['symbol'] for doc in symbols if 'symbol' in doc]
+            
+            self.logger.info(f"从数据库获取到 {len(symbol_list)} 个股票代码")
+            return symbol_list
+            
+        except Exception as e:
+            self.logger.error(f"获取所有股票代码失败: {e}")
+            return []
+    
+    async def get_all_symbols_by_types(self, symbol_types: List[Dict]) -> List[str]:
+        """
+        根据多个证券类型获取所有标的代码
+        
+        Args:
+            symbol_types: 证券类型列表，格式为[{'sec_type1': 1010, 'sec_type2': 101001}, ...]
+            
+        Returns:
+            List[str]: 标的代码列表
+        """
+        try:
+            collection = self._collections['symbol_info']
+            
+            # 构建查询条件
+            or_conditions = []
+            for symbol_type in symbol_types:
+                or_conditions.append({
+                    'sec_type1': symbol_type['sec_type1'],
+                    'sec_type2': symbol_type['sec_type2']
+                })
+            
+            cursor = collection.find(
+                {'$or': or_conditions},
+                {'symbol': 1, '_id': 0}
+            ).sort('symbol', 1)
+            
+            symbols = await cursor.to_list(length=None)
+            symbol_list = [doc['symbol'] for doc in symbols if 'symbol' in doc]
+            
+            self.logger.info(f"从数据库获取到 {len(symbol_list)} 个标的代码")
+            return symbol_list
+            
+        except Exception as e:
+            self.logger.error(f"获取所有标的代码失败: {e}")
+            return []
+    
     async def get_symbol_info_statistics(self) -> Dict[str, Any]:
         """
         获取标的基本信息统计

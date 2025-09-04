@@ -10,14 +10,14 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - mongodb_data:/data/db  # 使用逻辑卷而非本地目录
+      - ./mongodb_data:/data/db  # 使用逻辑卷而非本地目录
 
   mongo-express:
     image: mongo-express
     container_name: mongo-express
     restart: always
     ports:
-      - "8081:8081"
+      - "8088:8081"
     environment:
       ME_CONFIG_BASICAUTH_USERNAME: admin        # mongo-express 网页登录用户名
       ME_CONFIG_BASICAUTH_PASSWORD: admin   # mongo-express 网页登录密码
@@ -26,5 +26,5 @@ services:
       - mongodb
 
 # 定义逻辑卷
-volumes:
-  mongodb_data:
+#volumes:
+#  mongodb_data:
