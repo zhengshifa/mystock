@@ -21,6 +21,13 @@ class Settings:
         if not self.gm_token:
             raise ValueError("GM_TOKEN 环境变量未设置")
         
+        # 终端服务地址配置
+        self.gm_serv_addr: Optional[str] = os.getenv('GM_SERV_ADDR', '').strip()
+        if self.gm_serv_addr:
+            # 验证serv_addr格式
+            if not self._validate_serv_addr(self.gm_serv_addr):
+                raise ValueError(f"GM_SERV_ADDR 格式无效: {self.gm_serv_addr}，应为 'ip:port' 格式")
+        
         # 数据时间范围配置
         # 当START_DATE和END_DATE为空时，默认使用最新180天的数据
         start_date_env = os.getenv('START_DATE', '').strip()
@@ -188,6 +195,38 @@ class Settings:
             return False
         
         return True
+    
+    def _validate_serv_addr(self, serv_addr: str) -> bool:
+        """
+        验证serv_addr格式是否正确
+        
+        Args:
+            serv_addr: 服务地址，格式应为 'ip:port'
+            
+        Returns:
+            bool: 格式是否正确
+        """
+        try:
+            if ':' not in serv_addr:
+                return False
+            
+            parts = serv_addr.split(':')
+            if len(parts) != 2:
+                return False
+            
+            ip, port = parts
+            # 验证端口号
+            port_num = int(port)
+            if not (1 <= port_num <= 65535):
+                return False
+            
+            # 简单验证IP格式（可以是域名）
+            if not ip.strip():
+                return False
+                
+            return True
+        except (ValueError, IndexError):
+            return False
 
 
 # 全局配置实例

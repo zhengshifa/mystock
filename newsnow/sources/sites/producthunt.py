@@ -34,7 +34,8 @@ class ProductHuntSource(HTMLSource):
             }
             
             try:
-                html_content = await self.fetch_html(self.url)
+                # 使用 get_text 方法获取 HTML 字符串内容
+                html_content = await self.fetcher.get_text(self.url)
                 if not html_content:
                     return self.create_error_response("获取HTML内容失败")
                 

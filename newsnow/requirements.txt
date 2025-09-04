@@ -11,6 +11,9 @@ lxml>=4.9.0
 aiofiles>=23.0.0
 tenacity>=8.2.0
 click>=8.1.0
+# 核心依赖
+brotli>=1.0.9
+chardet>=5.2.0
 
 # 开发依赖
 pytest>=7.4.0

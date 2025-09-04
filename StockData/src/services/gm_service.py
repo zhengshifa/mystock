@@ -23,9 +23,18 @@ class GMService:
         设置掘金量化SDK
         """
         try:
+            # 如果配置了serv_addr，先设置服务地址
+            if settings.gm_serv_addr:
+                gm.set_serv_addr(settings.gm_serv_addr)
+                self.logger.info(f"设置终端服务地址: {settings.gm_serv_addr}")
+            
             # 设置token
             gm.set_token(settings.gm_token)
-            self.logger.info("掘金量化SDK初始化成功")
+            
+            if settings.gm_serv_addr:
+                self.logger.info(f"掘金量化SDK初始化成功，使用服务地址: {settings.gm_serv_addr}")
+            else:
+                self.logger.info("掘金量化SDK初始化成功，使用默认连接")
         except Exception as e:
             self.logger.error(f"掘金量化SDK初始化失败: {e}")
             raise

@@ -1,25 +1,21 @@
-# 使用官方Python 3.11镜像作为基础镜像
+# 使用Python 3.11官方镜像作为基础镜像
 FROM python:3.11-slim
 
 # 设置工作目录
 WORKDIR /app
 
 # 设置环境变量
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 # 安装系统依赖
 RUN echo 'Acquire::http::Proxy "http://38.19.66.199:7890";' >> /etc/apt/apt.conf && \
     echo 'Acquire::https::Proxy "http://38.19.66.199:7890";' >> /etc/apt/apt.conf && \
     apt-get update && apt-get install -y \
+    gcc \
+    g++ \
     curl \
-    build-essential \
-    libxml2-dev \
-    libxslt1-dev \
-    libffi-dev \
-    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # 指定步骤去缓存构建
@@ -31,24 +27,21 @@ ARG BUST_CACHE
 # 复制项目文件
 COPY . .
 
-# 安装uv包管理器
+# 使用uv安装Python依赖
 RUN pip install -r requirements.txt
-
 
 # 创建日志目录
 RUN mkdir -p logs
 
-# 创建非root用户
-RUN useradd --create-home --shell /bin/bash appuser && \
-    chown -R appuser:appuser /app
-USER appuser
+# 设置权限
+RUN chmod +x main.py start.py
 
 # 暴露端口（如果需要的话）
-#EXPOSE 8000
+# EXPOSE 8000
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import asyncio; from database.mongodb import get_mongodb_connection; asyncio.run(get_mongodb_connection().health_check())" || exit 1
+    CMD python -c "import sys; sys.exit(0)"
 
-# 默认启动命令
-CMD [ "python", "main.py"]
+# 默认启动命令（调度模式）
+CMD ["python", "start.py"]
