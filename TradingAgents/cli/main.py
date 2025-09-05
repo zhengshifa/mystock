@@ -9,7 +9,7 @@ from collections import deque
 from difflib import get_close_matches
 from functools import wraps
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, Any
 
 # 第三方库导入
 import typer
@@ -35,6 +35,7 @@ from cli.utils import (
     select_research_depth,
     select_shallow_thinking_agent,
 )
+from cli.export_utils import cli_report_exporter
 from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.utils.logging_manager import get_logger
@@ -517,7 +518,7 @@ def update_display(layout, spinner_text=None):
     layout["footer"].update(Panel(stats_table, border_style="grey50"))
 
 
-def get_user_selections():
+def get_user_selections(symbol: Optional[str] = None):
     """Get all user selections before starting the analysis display."""
     # Display ASCII art welcome message
     welcome_file = Path(__file__).parent / "static" / "welcome.txt"
@@ -567,14 +568,20 @@ def get_user_selections():
     selected_market = select_market()
 
     # Step 2: Ticker symbol
-    console.print(
-        create_question_box(
-            "步骤 2: 股票代码 | Step 2: Ticker Symbol",
-            f"请输入{selected_market['name']}股票代码 | Enter {selected_market['name']} ticker symbol",
-            selected_market['default']
+    if symbol:
+        # 如果提供了symbol参数，直接使用
+        selected_ticker = symbol.upper()
+        console.print(f"[green]使用提供的股票代码 | Using provided ticker: {selected_ticker}[/green]")
+    else:
+        # 否则进行交互式选择
+        console.print(
+            create_question_box(
+                "步骤 2: 股票代码 | Step 2: Ticker Symbol",
+                f"请输入{selected_market['name']}股票代码 | Enter {selected_market['name']} ticker symbol",
+                selected_market['default']
+            )
         )
-    )
-    selected_ticker = get_ticker(selected_market)
+        selected_ticker = get_ticker(selected_market)
 
     # Step 3: Analysis date
     default_date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -1025,17 +1032,36 @@ def check_api_keys(llm_provider: str) -> bool:
 
     return True
 
-def run_analysis():
+def run_analysis_with_export(symbol: Optional[str] = None, export_format: Optional[str] = "md", 
+                            output_dir: Optional[str] = "./exports", no_export: bool = False):
+    """
+    运行分析并支持导出功能
+    """
+    # 执行分析
+    results = run_analysis(symbol)
+    
+    # 如果不需要导出，直接返回
+    if no_export or not results:
+        return results
+    
+    # 导出报告
+    if export_format:
+        export_analysis_results(results, export_format, output_dir)
+    
+    return results
+
+
+def run_analysis(symbol: Optional[str] = None):
     import time
     start_time = time.time()  # 记录开始时间
     
     # First get all user selections
-    selections = get_user_selections()
+    selections = get_user_selections(symbol)
 
     # Check API keys before proceeding
     if not check_api_keys(selections["llm_provider"]):
         ui.show_error("分析终止 | Analysis terminated")
-        return
+        return None
 
     # 显示分析开始信息
     ui.show_step_header(1, "准备分析环境 | Preparing Analysis Environment")
@@ -1075,15 +1101,15 @@ def run_analysis():
     except ImportError as e:
         ui.show_error(f"模块导入失败 | Module import failed: {str(e)}")
         ui.show_warning("💡 请检查依赖安装 | Please check dependencies installation")
-        return
+        return None
     except ValueError as e:
         ui.show_error(f"配置参数错误 | Configuration error: {str(e)}")
         ui.show_warning("💡 请检查配置参数 | Please check configuration parameters")
-        return
+        return None
     except Exception as e:
         ui.show_error(f"初始化失败 | Initialization failed: {str(e)}")
         ui.show_warning("💡 请检查API密钥配置 | Please check API key configuration")
-        return
+        return None
 
     # Create result directory
     results_dir = Path(config["results_dir"]) / selections["ticker"] / selections["analysis_date"]
@@ -1214,7 +1240,7 @@ def run_analysis():
                 ui.show_error(f"❌ 股票数据验证失败: {preparation_result.error_message}")
                 ui.show_warning(f"💡 建议: {preparation_result.suggestion}")
                 logger.error(f"股票数据验证失败: {preparation_result.error_message}")
-                return
+                return None
 
             # 数据预获取成功
             ui.show_success(f"✅ 数据准备完成: {preparation_result.stock_name} ({preparation_result.market_type})")
@@ -1225,7 +1251,7 @@ def run_analysis():
             ui.show_error(f"❌ 数据预获取过程中发生错误: {str(e)}")
             ui.show_warning("💡 请检查网络连接或稍后重试")
             logger.error(f"数据预获取异常: {str(e)}")
-            return
+            return None
 
         # 显示数据获取阶段
         ui.show_step_header(3, "数据获取阶段 | Data Collection Phase")
@@ -1596,18 +1622,75 @@ def run_analysis():
         ui.show_user_message(f"⏱️ 总分析时间: {total_time:.1f}秒", "dim")
 
         update_display(layout)
+        
+        # 返回分析结果用于导出
+        return {
+            'ticker': selections['ticker'],
+            'analysis_date': selections['analysis_date'],
+            'final_trade_decision': final_state.get('final_trade_decision', ''),
+            'market_analysis': final_state.get('market_analysis', ''),
+            'fundamentals_analysis': final_state.get('fundamentals_analysis', ''),
+            'news_analysis': final_state.get('news_analysis', ''),
+            'social_analysis': final_state.get('social_analysis', ''),
+            'risk_analysis': final_state.get('risk_analysis', ''),
+            'total_time': total_time,
+            'config': config
+        }
+
+
+def export_analysis_results(results: Dict[str, Any], export_format: str, output_dir: str):
+    """
+    导出分析结果到指定格式
+    """
+    if not results:
+        logger.error("❌ 没有分析结果可导出")
+        ui.show_error("❌ 没有分析结果可导出")
+        return
+    
+    logger.info(f"📤 开始导出分析结果: 格式={export_format}, 目录={output_dir}")
+    ui.show_progress("正在生成导出文件...")
+    
+    try:
+        # 生成文件名
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        ticker = results.get('ticker', 'UNKNOWN')
+        filename = f"{ticker}_analysis_{timestamp}.{export_format}"
+        
+        # 导出报告
+        content = cli_report_exporter.export_report(results, export_format)
+        
+        if content:
+            # 保存到文件
+            file_path = cli_report_exporter.save_report_to_file(content, filename, output_dir)
+            
+            if file_path:
+                ui.show_success(f"✅ 报告已导出到: {file_path}")
+                ui.show_user_message(f"📁 文件路径: {file_path}", "dim")
+            else:
+                ui.show_error("❌ 导出失败")
+        else:
+            ui.show_error("❌ 导出内容生成失败")
+            
+    except Exception as e:
+        logger.error(f"❌ 导出失败: {e}")
+        ui.show_error(f"❌ 导出失败: {e}")
 
 
 @app.command(
     name="analyze",
     help="开始股票分析 | Start stock analysis"
 )
-def analyze():
+def analyze(
+    symbol: Optional[str] = typer.Option(None, "--symbol", "-s", help="股票代码 | Stock symbol"),
+    export_format: Optional[str] = typer.Option("md", "--export", "-e", help="导出格式: md,docx,pdf | Export format: md,docx,pdf"),
+    output_dir: Optional[str] = typer.Option("./exports", "--output", "-o", help="输出目录 | Output directory"),
+    no_export: bool = typer.Option(False, "--no-export", help="不导出报告 | Don't export report")
+):
     """
-    启动交互式股票分析工具
-    Launch interactive stock analysis tool
+    启动股票分析工具，支持导出功能
+    Launch stock analysis tool with export support
     """
-    run_analysis()
+    run_analysis_with_export(symbol, export_format, output_dir, no_export)
 
 
 @app.command(
